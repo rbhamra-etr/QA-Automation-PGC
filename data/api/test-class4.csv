@@ -1,0 +1,63 @@
+entry,exit,rated_class,timestamp,description
+1,5,4,2026-01-01T11:12:00.000Z,Holiday (New Year) eastbound midday
+5,1,4,2026-01-01T18:29:00.000Z,Holiday (New Year) westbound pmPeak
+14,33,4,2026-02-16T08:37:00.000Z,Holiday (Family Day) eastbound amPeak
+33,14,4,2026-02-16T17:55:00.000Z,Holiday (Family Day) westbound pmPeak
+10,37,4,2026-04-03T06:03:00.000Z,Holiday (Good Friday) eastbound earlyAM
+37,10,4,2026-04-03T20:44:00.000Z,Holiday (Good Friday) westbound pmPeak
+5,19,4,2026-05-18T12:29:00.000Z,Holiday (Victoria Day) eastbound midday
+19,5,4,2026-05-18T21:12:00.000Z,Holiday (Victoria Day) westbound evening
+14,44,4,2026-07-01T10:55:00.000Z,Holiday (Canada Day) eastbound midday
+44,14,4,2026-07-01T18:37:00.000Z,Holiday (Canada Day) westbound pmShoulder2
+33,14,4,2026-08-03T09:44:00.000Z,Holiday (Civic Holiday) westbound amPeak
+14,33,4,2026-08-03T15:29:00.000Z,Holiday (Civic Holiday) eastbound midday
+10,37,4,2026-09-07T14:12:00.000Z,Holiday (Labour Day) eastbound midday
+37,10,4,2026-09-07T19:55:00.000Z,Holiday (Labour Day) westbound pmPeak
+33,14,4,2026-10-12T08:03:00.000Z,Holiday (Thanksgiving) westbound amPeak
+14,33,4,2026-10-12T20:44:00.000Z,Holiday (Thanksgiving) eastbound evening
+10,1,4,2026-12-25T06:29:00.000Z,Holiday (Christmas) westbound earlyAM
+1,10,4,2026-12-25T13:12:00.000Z,Holiday (Christmas) eastbound midday
+10,1,4,2026-12-26T09:37:00.000Z,Holiday (Boxing Day) westbound amPeak
+1,10,4,2026-12-26T17:55:00.000Z,Holiday (Boxing Day) eastbound pmPeak
+1,44,4,2026-04-08T08:44:00.000Z,Weekday eastbound amPeak full route
+44,1,4,2026-04-08T16:29:00.000Z,Weekday westbound pmPeak full route
+7,24,4,2026-04-12T19:12:00.000Z,Weekend eastbound pmPeak
+24,7,4,2026-04-12T21:55:00.000Z,Weekend westbound evening
+2,10,4,2026-04-15T09:45:00.000Z,Weekday eastbound amShoulder
+10,2,4,2026-04-15T18:44:00.000Z,Weekday westbound pmShoulder2
+30,7,4,2026-04-14T03:29:00.000Z,Weekday westbound overnight
+7,30,4,2026-04-13T05:55:00.000Z,Weekday eastbound earlyAM
+1,10,4,2026-04-06T03:15:00.000Z,Weekday eastbound overnight
+10,1,4,2026-04-06T03:45:00.000Z,Weekday westbound overnight
+1,14,4,2026-04-06T05:30:00.000Z,Weekday eastbound earlyAM
+14,1,4,2026-04-06T06:15:00.000Z,Weekday westbound earlyAM
+5,24,4,2026-04-07T07:30:00.000Z,Weekday eastbound amPeak multi-zone
+24,5,4,2026-04-07T08:15:00.000Z,Weekday westbound amPeak multi-zone
+2,19,4,2026-04-07T09:45:00.000Z,Weekday eastbound amShoulder multi-zone
+19,2,4,2026-04-07T10:15:00.000Z,Weekday westbound amShoulder multi-zone
+1,33,4,2026-04-08T12:30:00.000Z,Weekday eastbound midday long
+33,1,4,2026-04-08T13:00:00.000Z,Weekday westbound midday long
+7,19,4,2026-04-09T14:45:00.000Z,Weekday eastbound pmShoulder1
+19,7,4,2026-04-09T15:15:00.000Z,Weekday westbound pmShoulder1
+10,30,4,2026-04-09T16:30:00.000Z,Weekday eastbound pmPeak
+30,10,4,2026-04-09T17:00:00.000Z,Weekday westbound pmPeak
+5,14,4,2026-04-10T18:30:00.000Z,Weekday eastbound pmShoulder2
+14,5,4,2026-04-10T19:15:00.000Z,Weekday westbound pmShoulder2
+2,7,4,2026-04-10T21:30:00.000Z,Weekday eastbound evening
+7,2,4,2026-04-10T22:00:00.000Z,Weekday westbound evening
+1,44,4,2026-04-11T07:00:00.000Z,Weekend eastbound overnight full route
+44,1,4,2026-04-11T07:30:00.000Z,Weekend westbound overnight full route
+5,19,4,2026-04-11T09:15:00.000Z,Weekend eastbound amPeak
+19,5,4,2026-04-11T09:45:00.000Z,Weekend westbound amPeak
+14,37,4,2026-04-11T14:00:00.000Z,Weekend eastbound midday long
+37,14,4,2026-04-11T15:30:00.000Z,Weekend westbound midday long
+7,24,4,2026-04-12T19:30:00.000Z,Weekend eastbound pmPeak
+24,7,4,2026-04-12T20:00:00.000Z,Weekend westbound pmPeak
+1,10,4,2026-04-12T21:45:00.000Z,Weekend eastbound evening
+10,1,4,2026-04-12T22:15:00.000Z,Weekend westbound evening
+1,19,4,2026-01-01T11:12:00.000Z,Holiday (New Year) eastbound midday multi-zone
+19,1,4,2026-01-01T18:29:00.000Z,Holiday (New Year) westbound pmPeak multi-zone
+5,44,4,2026-05-18T12:55:00.000Z,Holiday (Victoria Day) eastbound midday long
+44,5,4,2026-05-18T21:37:00.000Z,Holiday (Victoria Day) westbound evening long
+33,1,4,2026-10-12T08:55:00.000Z,Holiday (Thanksgiving) westbound amPeak long
+1,33,4,2026-10-12T20:37:00.000Z,Holiday (Thanksgiving) eastbound evening long

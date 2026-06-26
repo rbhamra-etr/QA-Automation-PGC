@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node", "@playwright/test"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "ignoreDeprecations": "6.0",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist"
+  },
+  "include": [
+    "playwright.config.ts",
+    "core/**/*.ts",
+    "data/**/*.ts",
+    "pages/**/*.ts",
+    "step-definitions/**/*.ts",
+    "core/configs/env.config.ts"
+  ]
+}

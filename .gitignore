@@ -1,0 +1,41 @@
+
+# Dependencies
+node_modules/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# BDD generated spec files
+.features-gen/
+
+# Reports (generated at runtime)
+reports/playwright/
+reports/cucumber/
+reports/cucumber-rich/
+
+# Build output
+dist/
+
+# Environment / secrets — NEVER commit these
+.env
+.env.qa
+.env.uat
+.env.local
+.env.dev
+
+# Keep the template — safe to commit
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep the template — safe to commit
+!.env.example
+.vscode/settings.json
+*.suo
+*.user

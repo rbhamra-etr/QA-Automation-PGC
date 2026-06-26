@@ -1,0 +1,81 @@
+name: Playwright Cucumber Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate-tags:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate feature tags
+        run: npm run validate:feature-tags
+
+  test-matrix:
+    needs: validate-tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - name: all
+            script: test:all
+          - name: smoke
+            script: test:smoke
+          - name: web
+            script: test:web
+          - name: sap
+            script: test:sap
+          - name: sfdc
+            script: test:sfdc
+          - name: appian
+            script: test:appian
+          - name: integration
+            script: test:integration
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run tests (${{ matrix.suite.name }})
+        run: npm run ${{ matrix.suite.script }}
+        env:
+          WEB_BASE_URL: ${{ vars.WEB_BASE_URL }}
+          HEADLESS: 'true'
+
+      - name: Upload test reports (${{ matrix.suite.name }})
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cucumber-reports-${{ matrix.suite.name }}
+          path: reports/
+          retention-days: 30

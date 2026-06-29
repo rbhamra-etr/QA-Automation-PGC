@@ -25,6 +25,11 @@ When('I sign in to 407ETR using credential key {string}', async ({ pages }, cred
   await pages.web.clickLoginButton();
 });
 
+When('I sign in to 407ETR using {string} and password {string}', async ({ pages }, username: string, password: string) => {
+  //const { username, password } = getUserCredentials('Web', credentialKey);
+  await pages.web.enterCredentials(username, password);
+  await pages.web.clickLoginButton();
+});
 
 When('I sign in to 407ETR using user ID {string}', async ({ pages }, userId: string) => {
   const sharedPassword = process.env.WEB_SHARED_PASSWORD?.trim();

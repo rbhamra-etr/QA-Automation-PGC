@@ -2,19 +2,13 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const parseNumber = (value: string | undefined, fallback: number): number => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-};
-
-const parseRetryCount = (value: string | undefined, fallback: number): number => {
-  const parsed = Number(value);
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
-};
-
-const defaultTimeoutMs = parseNumber(process.env['DEFAULT_TIMEOUT_MS'] ?? process.env['DEFAULT_TIMEOUT'], 30000);
-const defaultRetryCount = parseRetryCount(process.env['DEFAULT_RETRY_COUNT'], 3);
-
+/**
+ * ENV — environment-specific DATA (URLs, target identifiers).
+ *
+ * Test EXECUTION settings (headless, browser channel, timeouts, retries) live in
+ * playwright.config.ts → `EXECUTION`. Keep this object limited to where/what to
+ * test, not how the run behaves.
+ */
 export const ENV = {
   WEB_BASE_URL: process.env['WEB_BASE_URL'] ?? 'https://www.qat.nonprd.407etr.com',
   IADAPTIVE_ACCESS_URL:
@@ -22,17 +16,6 @@ export const ENV = {
     'https://aba0200.cyberark.cloud/userportal/identity/MyApps/VHJlZVRhYjphbGw%3D',
   SFDC_RUN_URL: process.env['SFDC_RUN_URL'],
   SFDC_ENV: process.env['SFDC_ENV'] ?? 'SFDC_QA2',
-  HEADLESS: process.env['HEADLESS'] !== 'false',
-  SLOW_MO: Number(process.env['SLOW_MO'] ?? 0),
-  DEFAULT_TIMEOUT_MS: defaultTimeoutMs,
-  DEFAULT_TIMEOUT: defaultTimeoutMs,
-  IADAPTIVE_TIMEOUT_MS: parseNumber(process.env['IADAPTIVE_TIMEOUT_MS'], defaultTimeoutMs),
-  SFDC_TIMEOUT_MS: parseNumber(process.env['SFDC_TIMEOUT_MS'], defaultTimeoutMs),
-  DEFAULT_RETRY_COUNT: defaultRetryCount,
-  IADAPTIVE_RETRY_COUNT: parseRetryCount(process.env['IADAPTIVE_RETRY_COUNT'], defaultRetryCount),
-  SFDC_RETRY_COUNT: parseRetryCount(process.env['SFDC_RETRY_COUNT'], defaultRetryCount),
-  BROWSER_CHANNEL: process.env['BROWSER_CHANNEL'],
-  BROWSER_EXECUTABLE_PATH: process.env['BROWSER_EXECUTABLE_PATH'],
 };
 
 /**

@@ -1,5 +1,5 @@
 import { expect, Page, Locator, FrameLocator } from '@playwright/test';
-import { ENV } from '../configs/env.config';
+import { getIAdaptiveUrl } from '../configs/env.config';
 import { BasePage } from './base.page';
 
 /**
@@ -41,7 +41,7 @@ export class IAdaptivePage extends BasePage {
   }
 
   async open(): Promise<void> {
-    const url = ENV.IADAPTIVE_ACCESS_URL;
+    const url = getIAdaptiveUrl();
     if (!url) throw new Error('IADAPTIVE_ACCESS_URL is not set. Add it to .env.qa or .env.uat.');
     await this.page.goto(url, { waitUntil: 'domcontentloaded' });
   }

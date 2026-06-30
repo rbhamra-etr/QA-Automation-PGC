@@ -34,7 +34,8 @@
     "test:qa:file": "npm run bdd:gen && cross-env ENV=qa playwright test",
     "test:uat:file": "npm run bdd:gen && cross-env ENV=uat playwright test",
     "test:uat:web:tag": "npm run bdd:gen && cross-env ENV=uat playwright test Features/web --grep",
-    "xray:upload:cucumber": "node scripts/upload-xray-cucumber.mjs"
+    "xray:upload:cucumber": "node scripts/upload-xray-cucumber.mjs",
+    "xray:import:features": "node scripts/import-xray-features.mjs"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,6 @@
 import { BasePage } from '../../core/shared/base.page';
 import { ENV } from '../../core/configs/env.config';
+import { EXECUTION } from '../../playwright.config';
 
 type DomButtonLike = {
   getAttribute(name: string): string | null;
@@ -49,11 +50,11 @@ export class SfdcUserListPage extends BasePage {
   );
 
   private resolveSfdcTimeout(timeoutMs?: number): number {
-    return this.resolveTimeout(timeoutMs, ENV.SFDC_TIMEOUT_MS);
+    return this.resolveTimeout(timeoutMs, EXECUTION.timeout.sfdc);
   }
 
   private resolveSfdcRetries(retries?: number): number {
-    return this.resolveRetries(retries, ENV.SFDC_RETRY_COUNT);
+    return this.resolveRetries(retries, EXECUTION.retry.sfdc);
   }
 
   private async scrollSetupTreeUntilVisible(

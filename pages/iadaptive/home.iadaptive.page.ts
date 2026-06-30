@@ -1,6 +1,7 @@
 import { Frame } from '@playwright/test';
 import { BasePage } from '../../core/shared/base.page';
 import { ENV } from '../../core/configs/env.config';
+import { EXECUTION } from '../../playwright.config';
 
 export class IAdaptiveHomePage extends BasePage {
   // Selectors
@@ -31,7 +32,7 @@ export class IAdaptiveHomePage extends BasePage {
 
   async navigateToAccessPortal(): Promise<void> {
     await this.page.goto(ENV.IADAPTIVE_ACCESS_URL, { waitUntil: 'domcontentloaded' });
-    await this.accessNav.first().waitFor({ state: 'visible', timeout: ENV.IADAPTIVE_TIMEOUT_MS });
+    await this.accessNav.first().waitFor({ state: 'visible', timeout: EXECUTION.timeout.iadaptive });
   }
 
   async navigate(): Promise<void> {
@@ -39,7 +40,7 @@ export class IAdaptiveHomePage extends BasePage {
   }
 
   async isAccessPageVisible(): Promise<boolean> {
-    const timeout = this.resolveTimeout(undefined, ENV.IADAPTIVE_TIMEOUT_MS);
+    const timeout = this.resolveTimeout(undefined, EXECUTION.timeout.iadaptive);
     try {
       await this.accessNav.first().waitFor({ state: 'visible', timeout });
       return true;
@@ -49,8 +50,8 @@ export class IAdaptiveHomePage extends BasePage {
   }
 
   async closeModalIfVisible(timeoutMs?: number, retries?: number): Promise<void> {
-    const timeout = this.resolveTimeout(timeoutMs, ENV.IADAPTIVE_TIMEOUT_MS);
-    const attempts = this.resolveRetries(retries, ENV.IADAPTIVE_RETRY_COUNT);
+    const timeout = this.resolveTimeout(timeoutMs, EXECUTION.timeout.iadaptive);
+    const attempts = this.resolveRetries(retries, EXECUTION.retry.iadaptive);
 
     await this.retryAction(
       'Close IAdaptive modal if visible',
@@ -91,8 +92,8 @@ export class IAdaptiveHomePage extends BasePage {
   }
 
   async launchSfdcApp(timeoutMs?: number, retries?: number): Promise<void> {
-    const timeout = this.resolveTimeout(timeoutMs, ENV.IADAPTIVE_TIMEOUT_MS);
-    const attempts = this.resolveRetries(retries, ENV.IADAPTIVE_RETRY_COUNT);
+    const timeout = this.resolveTimeout(timeoutMs, EXECUTION.timeout.iadaptive);
+    const attempts = this.resolveRetries(retries, EXECUTION.retry.iadaptive);
     const tileName = ENV.SFDC_ENV.trim();
 
     if (!tileName) {

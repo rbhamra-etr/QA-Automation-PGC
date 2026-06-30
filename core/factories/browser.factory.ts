@@ -19,17 +19,18 @@ import os from 'os';
 import path from 'path';
 import type { BrowserSession } from '../types/browser.type';
 import { CHROME_ARGS, AUTH_HEADERS_TO_STRIP } from '../consts/browser.const';
+import { EXECUTION } from '../../playwright.config';
 
 export type { BrowserSession } from '../types/browser.type';
 
 export async function launchIncognitoBrowser(): Promise<BrowserSession> {
-  const isHeadless = process.env.HEADLESS === 'true';
+  const isHeadless = EXECUTION.headless;
 
   // Unique temp directory — guarantees a clean profile for every test run
   const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pw-chrome-'));
 
   const context = await chromium.launchPersistentContext(userDataDir, {
-    channel: 'chrome',
+    channel: EXECUTION.channel,
     headless: isHeadless,
     viewport: isHeadless ? { width: 1920, height: 1080 } : null,
     deviceScaleFactor: isHeadless ? 1 : undefined,

@@ -10,17 +10,17 @@ Feature: 407ETR Web Login
     And I should see my account dashboard
 
     Examples:
-      | user_id         |
+      | user_id                         |
       | uat200000312547@407langroup.com |
     #  | your_user_id_02 |
 
   @negative
   Scenario Outline: Login fails with invalid user ID
     Given I am on the 407ETR login page
-    When I sign in to 407ETR using user ID "<user_id>"
+    When I sign in to 407ETR using "<user_id>" and password "<password>"
     Then I should remain on the login page
     And I should see a login error message
 
     Examples:
-      | user_id         |
-      | invalid_user_01 |
+      | user_id         | password |
+      | invalid_user_01 | kjhgf    |

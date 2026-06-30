@@ -1,5 +1,6 @@
 import { Page, Locator, Download, Response } from '@playwright/test';
 import { ENV } from '../configs/env.config';
+import { EXECUTION } from '../../playwright.config';
 
 export class BasePage {
   constructor(protected page: Page) {}
@@ -434,11 +435,11 @@ export class BasePage {
   // --- Timeout / retry helpers -----------------------------------------------
 
   protected resolveTimeout(timeoutMs?: number, appDefaultTimeoutMs?: number): number {
-    return timeoutMs ?? appDefaultTimeoutMs ?? ENV.DEFAULT_TIMEOUT_MS;
+    return timeoutMs ?? appDefaultTimeoutMs ?? EXECUTION.timeout.default;
   }
 
   protected resolveRetries(retries?: number, appDefaultRetries?: number): number {
-    return retries ?? appDefaultRetries ?? ENV.DEFAULT_RETRY_COUNT;
+    return retries ?? appDefaultRetries ?? EXECUTION.retry.default;
   }
 
   protected async retryAction(

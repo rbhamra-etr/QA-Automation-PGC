@@ -11,6 +11,8 @@
 | Reporting | Playwright HTML · Cucumber JSON · Rich Cucumber HTML |
 | Env management | dotenv + cross-env |
 | Formatting | Prettier |
+| Package Manager | npm |
+| Module System | CommonJS (`"type": "commonjs"`) |
 | CI | GitHub Actions |
 
 ## Key Package Versions
@@ -22,4 +24,5 @@ See `package.json` for exact pinned versions.
 - `typescript` — type safety
 - `dotenv` — `.env.qa` / `.env.uat` environment loading
 - `cross-env` — cross-platform `ENV=qa` variable injection
+- `prettier` — consistent code formatting across the repository
 - `multiple-cucumber-html-reporter` — rich Cucumber HTML report

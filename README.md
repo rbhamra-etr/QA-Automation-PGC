@@ -5,6 +5,13 @@ Tests **five systems from one project**: SFDC, Web, Appian, SAP Fiori, and APIs.
 
 > **New here?** Read [.github/copilot-instructions.md](.github/copilot-instructions.md) for the architecture and how to extend it.
 
+## Documentation
+
+- [Tech Stack](docs/reference/tech-stack.md)
+- [Prerequisites](docs/getting-started/prerequisites.md)
+- [Quick Start](docs/getting-started/quick-start.md)
+- [Windows npm + PowerShell + Zscaler Troubleshooting](docs/getting-started/windows-npm-powershell-zscaler.md)
+
 ## Key Features
 
 - **BDD / Gherkin** — write tests in plain English `.feature` files
@@ -85,6 +92,7 @@ tsconfig.json                      # TypeScript compiler settings
 ```
 
 > **Per-system layout convention**
+>
 > - `pages/<system>/` — page objects (one class per screen), locators co-located as `private get` `Locator` getters.
 > - `step-definitions/<system>/` — step files per feature area. Thin wrappers that call page methods.
 > - `data/` — module-specific test data / reference tables.
@@ -133,6 +141,7 @@ XRAY_CLIENT_SECRET=your_client_secret
 ```
 
 > Credential key convention:
+>
 > - App + Role: `{APP}_{ROLE}_USERNAME` / `{APP}_{ROLE}_PASSWORD`
 > - Single-user app: `{APP}_USERNAME` / `{APP}_PASSWORD`
 > - Role names are auto-normalised: spaces → `_`, uppercase. e.g. `"Dig Sup Mgr"` → `DIG_SUP_MGR`
@@ -145,31 +154,31 @@ XRAY_CLIENT_SECRET=your_client_secret
 
 All tests open in a **visible incognito Chrome window** by default (your installed Chrome, no Playwright browser download needed).
 
-| Command | Environment | Browser |
-|---|---|---|
-| `npm test` | QA (default) | headed Chrome incognito |
-| `npm run test:qa` | QA | headed Chrome incognito |
-| `npm run test:uat` | UAT | headed Chrome incognito |
-| `npm run test:qa:headed` | QA | headed Chrome incognito (explicit) |
-| `npm run test:uat:headed` | UAT | headed Chrome incognito (explicit) |
-| `npm run test:ui` | — | Playwright interactive UI mode |
-| `npm run test:report` | — | Open last HTML report |
-| Cucumber JSON output | — | `reports/cucumber/cucumber-report.json` |
+| Command                   | Environment  | Browser                                 |
+| ------------------------- | ------------ | --------------------------------------- |
+| `npm test`                | QA (default) | headed Chrome incognito                 |
+| `npm run test:qa`         | QA           | headed Chrome incognito                 |
+| `npm run test:uat`        | UAT          | headed Chrome incognito                 |
+| `npm run test:qa:headed`  | QA           | headed Chrome incognito (explicit)      |
+| `npm run test:uat:headed` | UAT          | headed Chrome incognito (explicit)      |
+| `npm run test:ui`         | —            | Playwright interactive UI mode          |
+| `npm run test:report`     | —            | Open last HTML report                   |
+| Cucumber JSON output      | —            | `reports/cucumber/cucumber-report.json` |
 
 ---
 
 ### Run by system
 
-| Command | System |
-|---|---|
-| `npm run test:sfdc` | SFDC only |
-| `npm run test:web` | Web only |
-| `npm run test:appian` | Appian only |
-| `npm run test:fiori` | SAP Fiori only |
-| `npm run test:sap` | SAP only |
-| `npm run test:api` | API tests only (no browser) |
-| `npm run test:browser` | All browser tests (no API) |
-| `npm run test:e2e` | End-to-end integration tests |
+| Command                | System                       |
+| ---------------------- | ---------------------------- |
+| `npm run test:sfdc`    | SFDC only                    |
+| `npm run test:web`     | Web only                     |
+| `npm run test:appian`  | Appian only                  |
+| `npm run test:fiori`   | SAP Fiori only               |
+| `npm run test:sap`     | SAP only                     |
+| `npm run test:api`     | API tests only (no browser)  |
+| `npm run test:browser` | All browser tests (no API)   |
+| `npm run test:e2e`     | End-to-end integration tests |
 
 ---
 
@@ -177,13 +186,13 @@ All tests open in a **visible incognito Chrome window** by default (your install
 
 Tags are set in `.feature` files on the `Feature:`, `Scenario:`, or `Scenario Outline:` line.
 
-| Command | Runs |
-|---|---|
-| `npm run test:smoke` | All `@smoke` scenarios |
+| Command                   | Runs                        |
+| ------------------------- | --------------------------- |
+| `npm run test:smoke`      | All `@smoke` scenarios      |
 | `npm run test:regression` | All `@regression` scenarios |
-| `npm run test:positive` | All `@positive` scenarios |
-| `npm run test:negative` | All `@negative` scenarios |
-| `npm run test:access` | All `@access` scenarios |
+| `npm run test:positive`   | All `@positive` scenarios   |
+| `npm run test:negative`   | All `@negative` scenarios   |
+| `npm run test:access`     | All `@access` scenarios     |
 
 **Run any tag ad-hoc:**
 
@@ -233,6 +242,7 @@ Given I am logged in to SFDC as "CSR"
 ```
 
 Behind the scenes this:
+
 1. Opens the IAdaptive portal URL from your `.env` file
 2. Logs in with the credentials for the `CSR` role
 3. Clicks the **SFDC** tile to launch Salesforce
@@ -286,24 +296,24 @@ Edit `core/consts/app-registry.const.ts` to add the app entry, then `core/config
 
 Every page class that extends `BasePage` inherits these methods automatically:
 
-| Category | Methods |
-|---|---|
-| **Locator** | `locate`, `locateAll`, `count` |
-| **Mouse** | `click`, `forceClick`, `doubleClick`, `rightClick`, `clickNth`, `ctrlClick`, `shiftClick`, `hover`, `dragAndDrop` |
-| **Input** | `fill`, `type`, `clear`, `pressKey`, `pressGlobalKey`, `selectAllText`, `selectByLabel`, `selectByValue`, `check`, `uncheck`, `uploadFile`, `clearFile`, `pasteText` |
-| **Navigation** | `goto`, `getCurrentUrl`, `getPageTitle`, `reload`, `goBack`, `goForward`, `openNewTab`, `closePage` |
-| **Waits** | `waitForVisible`, `waitForHidden`, `waitForAttached`, `waitForDetached`, `waitForUrl`, `waitForNetworkIdle`, `waitForApiResponse`, `sleep` |
-| **Reading** | `getText`, `getTextContent`, `getAttribute`, `getInputValue`, `getInnerHTML`, `getAllTexts`, `isVisible`, `isEnabled`, `isDisabled`, `isChecked`, `isPresent` |
-| **Screenshots** | `screenshot` (full page), `screenshotElement` (single element) |
-| **Scroll** | `scrollIntoView`, `scrollToBottom`, `scrollToTop`, `scrollBy`, `jsScrollIntoView` |
-| **Dialogs** | `acceptDialog`, `dismissDialog`, `acceptDialogWithValue` |
-| **iFrame** | `frameLocator` |
-| **Download** | `clickAndDownload` |
-| **JavaScript** | `executeScript`, `jsScrollIntoView` |
-| **Storage** | `clearCookies`, `clearLocalStorage`, `clearSessionStorage`, `getLocalStorageItem`, `setLocalStorageItem` |
-| **Clipboard** | `getClipboardText` |
-| **Focus** | `focus`, `blur` |
-| **Position** | `getBoundingBox` |
+| Category        | Methods                                                                                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Locator**     | `locate`, `locateAll`, `count`                                                                                                                                       |
+| **Mouse**       | `click`, `forceClick`, `doubleClick`, `rightClick`, `clickNth`, `ctrlClick`, `shiftClick`, `hover`, `dragAndDrop`                                                    |
+| **Input**       | `fill`, `type`, `clear`, `pressKey`, `pressGlobalKey`, `selectAllText`, `selectByLabel`, `selectByValue`, `check`, `uncheck`, `uploadFile`, `clearFile`, `pasteText` |
+| **Navigation**  | `goto`, `getCurrentUrl`, `getPageTitle`, `reload`, `goBack`, `goForward`, `openNewTab`, `closePage`                                                                  |
+| **Waits**       | `waitForVisible`, `waitForHidden`, `waitForAttached`, `waitForDetached`, `waitForUrl`, `waitForNetworkIdle`, `waitForApiResponse`, `sleep`                           |
+| **Reading**     | `getText`, `getTextContent`, `getAttribute`, `getInputValue`, `getInnerHTML`, `getAllTexts`, `isVisible`, `isEnabled`, `isDisabled`, `isChecked`, `isPresent`        |
+| **Screenshots** | `screenshot` (full page), `screenshotElement` (single element)                                                                                                       |
+| **Scroll**      | `scrollIntoView`, `scrollToBottom`, `scrollToTop`, `scrollBy`, `jsScrollIntoView`                                                                                    |
+| **Dialogs**     | `acceptDialog`, `dismissDialog`, `acceptDialogWithValue`                                                                                                             |
+| **iFrame**      | `frameLocator`                                                                                                                                                       |
+| **Download**    | `clickAndDownload`                                                                                                                                                   |
+| **JavaScript**  | `executeScript`, `jsScrollIntoView`                                                                                                                                  |
+| **Storage**     | `clearCookies`, `clearLocalStorage`, `clearSessionStorage`, `getLocalStorageItem`, `setLocalStorageItem`                                                             |
+| **Clipboard**   | `getClipboardText`                                                                                                                                                   |
+| **Focus**       | `focus`, `blur`                                                                                                                                                      |
+| **Position**    | `getBoundingBox`                                                                                                                                                     |
 
 ---
 
@@ -317,6 +327,4 @@ Every page class that extends `BasePage` inherits these methods automatically:
 - **Tags** — every scenario must have at least one of: `@smoke`, `@regression`, `@positive`, `@negative`, `@access`. API scenarios must also have `@api`.
 - **File naming** — `<name>.<system>.<type>.ts` e.g. `login.sfdc.steps.ts`, `user-list.sfdc.page.ts`.
 
-
 ## Key Features
-

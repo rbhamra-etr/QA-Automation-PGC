@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "bdd:gen": "bddgen",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "npm run bdd:gen && playwright test",
     "test:headed": "npm run bdd:gen && cross-env HEADLESS=false playwright test",
     "test:headless": "npm run bdd:gen && cross-env HEADLESS=true playwright test",
@@ -49,6 +51,7 @@
     "dotenv": "^17.4.2",
     "multiple-cucumber-html-reporter": "^4.0.0",
     "playwright-bdd": "^8.5.0",
+    "prettier": "^3.9.4",
     "typescript": "^6.0.3"
   }
 }

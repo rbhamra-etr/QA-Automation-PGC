@@ -25,17 +25,17 @@ Use feature-folder tags as the source of truth:
 
 ## Commands
 Prefer npm scripts when available:
-- `npm run test:all`
+- `npm test`
 - `npm run test:smoke`
 - `npm run test:web`
 - `npm run test:sap`
 - `npm run test:sfdc`
 - `npm run test:appian`
-- `npm run test:integration`
+- `npm run test:e2e`
 
 Fallback command format:
-- `npx cucumber-js --tags "@<tag>"`
-- `npx cucumber-js` for all
+- `npm run test:qa:tag -- @<tag>`
+- `npm run test:qa`
 
 ## Procedure
 1. Confirm requested scope: app tag, smoke, or all.

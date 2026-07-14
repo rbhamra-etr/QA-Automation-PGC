@@ -79,9 +79,9 @@ Suggested locator examples:
 
 ## 9. Automation Packaging
 
-- Suggested feature file path: features/web/invoice-approval.web.feature
-- Suggested step definition path: step-definitions/web/invoice-approval.web.steps.ts
-- Suggested page object path: pages/web/invoice.web.page.ts
+- Suggested feature file path: functionalities/web-login-validation/features/invoice-approval.web.feature
+- Suggested step definition path: functionalities/web-login-validation/step-definitions/invoice-approval.web.steps.ts
+- Suggested page object path: shared/apps/web/pages/invoice.web.page.ts
 - Candidate tags: @web @smoke
 
 ## 10. Risks and Open Questions

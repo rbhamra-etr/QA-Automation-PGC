@@ -27,16 +27,16 @@ Use this skill when asked to:
 
 ## App Ownership Model
 
-Each app owns its folders end-to-end:
+Ownership is split by domain modules for features/steps and app folders for POMs:
 
 | App         | Features               | Step definitions                 | Page objects          |
 |-------------|------------------------|----------------------------------|-----------------------|
-| iadaptive   | features/iadaptive/    | step-definitions/iadaptive/      | pages/iadaptive/      |
-| sfdc        | features/sfdc/         | step-definitions/sfdc/           | pages/sfdc/           |
-| sap         | features/sap/          | step-definitions/sap/            | pages/sap/            |
-| appian      | features/appian/       | step-definitions/appian/         | pages/appian/         |
-| web         | features/web/          | step-definitions/web/            | pages/web/            |
-| integration | features/integration/  | step-definitions/integration/    | pages/integration/    |
+| iadaptive   | functionalities/*/features/    | functionalities/common/step-definitions/      | shared/apps/iadaptive/      |
+| sfdc        | functionalities/request-fastners/features/         | functionalities/common/step-definitions/ + functionalities/request-fastners/step-definitions/           | shared/apps/sfdc/           |
+| sap         | functionalities/*/features/          | functionalities/*/step-definitions/            | shared/apps/sap/            |
+| appian      | functionalities/*/features/       | functionalities/*/step-definitions/         | shared/apps/appian/         |
+| web         | functionalities/web-login-validation/features/          | functionalities/common/step-definitions/ + functionalities/web-login-validation/step-definitions/            | shared/apps/web/            |
+| integration | functionalities/*/features/  | functionalities/*/step-definitions/    | shared/apps/*/    |
 
 A feature file may contain steps from multiple apps. That is intentional for cross-app flows. However, each step must still be **defined** in its owning app's step definition folder.
 

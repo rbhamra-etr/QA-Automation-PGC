@@ -13,12 +13,12 @@ Use this skill to verify that every Gherkin step and every POM locator/method is
 
 | App         | Feature folder          | Step definitions folder          | Page objects folder     |
 |-------------|-------------------------|----------------------------------|-------------------------|
-| iadaptive   | features/iadaptive/     | step-definitions/iadaptive/      | pages/iadaptive/        |
-| sfdc        | features/sfdc/          | step-definitions/sfdc/           | pages/sfdc/             |
-| sap         | features/sap/           | step-definitions/sap/            | pages/sap/              |
-| appian      | features/appian/        | step-definitions/appian/         | pages/appian/           |
-| web         | features/web/           | step-definitions/web/            | pages/web/              |
-| integration | features/integration/   | step-definitions/integration/    | pages/integration/      |
+| iadaptive   | functionalities/*/features/     | functionalities/common/step-definitions/ and/or functionalities/*/step-definitions/      | shared/apps/iadaptive/        |
+| sfdc        | functionalities/request-fastners/features/          | functionalities/common/step-definitions/ and functionalities/request-fastners/step-definitions/           | shared/apps/sfdc/             |
+| sap         | functionalities/*/features/           | functionalities/*/step-definitions/            | shared/apps/sap/              |
+| appian      | functionalities/*/features/        | functionalities/*/step-definitions/         | shared/apps/appian/           |
+| web         | functionalities/web-login-validation/features/           | functionalities/common/step-definitions/ and functionalities/web-login-validation/step-definitions/            | shared/apps/web/              |
+| integration | functionalities/*/features/   | functionalities/*/step-definitions/    | shared/apps/*/      |
 
 ## Step Ownership Convention
 
@@ -49,14 +49,14 @@ Each POM class is scoped to its app folder:
 
 | POM class                                | Belongs to       |
 |------------------------------------------|------------------|
-| `IAdaptiveHomePage`                      | pages/iadaptive/ |
-| `SfdcUserListPage`, `SfdcCasePage`       | pages/sfdc/      |
-| `SapInvoicePage`                         | pages/sap/       |
-| `AppianHomePage`, `AppianDashboardPage`  | pages/appian/    |
-| `WebHomePage`, `WebAccountPage`          | pages/web/       |
+| `IAdaptiveHomePage`                      | shared/apps/iadaptive/ |
+| `SfdcUserListPage`, `SfdcCasePage`       | shared/apps/sfdc/      |
+| `SapInvoicePage`                         | shared/apps/sap/       |
+| `AppianHomePage`, `AppianDashboardPage`  | shared/apps/appian/    |
+| `WebHomePage`, `WebAccountPage`          | shared/apps/web/       |
 
-A step definition file in `step-definitions/sfdc/` must only instantiate POM classes from `pages/sfdc/`.
-IAdaptive-owned steps that appear in an SFDC feature scenario must still be defined in `step-definitions/iadaptive/` using `pages/iadaptive/` POMs.
+A step definition file in `functionalities/<module>/step-definitions/` must only instantiate POM classes from the owning `shared/apps/<system>/` folder.
+IAdaptive-owned login/navigation steps should stay in `functionalities/common/step-definitions/` and use `shared/apps/iadaptive/` POMs.
 
 ## Multi-Keyword Step Registration
 
@@ -74,19 +74,19 @@ Then('User verifies X on Page Y of App', verifyFn);
 ## Validation Procedure
 
 ### Step 1 — Discover all feature files
-Read every `.feature` file under `features/`. For each scenario, collect every step text and note the keyword used (`Given`, `When`, `Then`, `And`, `But`).
+Read every `.feature` file under `functionalities/**/features/`. For each scenario, collect every step text and note the keyword used (`Given`, `When`, `Then`, `And`, `But`).
 
 ### Step 2 — Resolve step ownership
 For each step text, extract the app name from the `on Page X of <App>` suffix and map it to the owning app folder.
 
 ### Step 3 — Verify steps are defined in the correct app folder
-Search all `.ts` files under `step-definitions/` for each step text. Verify the file is under the correct app subfolder. Report violations:
+Search all `.ts` files under `functionalities/**/step-definitions/` for each step text. Verify the file is under the correct module/common folder. Report violations:
 
 ```
 [MISPLACED STEP]
 Step text   : "User navigates to IAdaptive access portal on Page Access of IAdaptive"
-Defined in  : step-definitions/sfdc/user-list.sfdc.steps.ts   ← WRONG
-Should be in: step-definitions/iadaptive/
+Defined in  : functionalities/request-fastners/step-definitions/request-fasteners.steps.ts   ← WRONG
+Should be in: functionalities/common/step-definitions/
 ```
 
 ### Step 4 — Verify POM usage in step definition files
@@ -94,9 +94,9 @@ For each step definition file, identify which POM classes are instantiated. Veri
 
 ```
 [WRONG POM USAGE]
-Step file   : step-definitions/sfdc/user-list.sfdc.steps.ts
+Step file   : functionalities/request-fastners/step-definitions/request-fasteners.steps.ts
 Instantiates: IAdaptiveHomePage (belongs to iadaptive)
-Should use  : only SfdcUserListPage, SfdcCasePage, etc.
+Should use  : only POMs from the step's owning app folder under shared/apps/.
 ```
 
 ### Step 5 — Verify multi-keyword registration
@@ -111,12 +111,12 @@ Missing     : When
 ```
 
 ### Step 6 — Verify no undefined steps
-For each step text in feature files, confirm a matching step definition exists in `step-definitions/`. Report missing ones:
+For each step text in feature files, confirm a matching step definition exists in `functionalities/**/step-definitions/`. Report missing ones:
 
 ```
 [UNDEFINED STEP]
 Step text   : "User does something undeclared on Page X of SFDC"
-Found in    : features/sfdc/user-list.sfdc.feature
+Found in    : functionalities/request-fastners/features/request-fasteners.feature
 Defined in  : (none)
 ```
 

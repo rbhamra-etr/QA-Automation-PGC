@@ -4,27 +4,15 @@
 
 | Feature File | Tags | System | Role / User | Intent |
 |---|---|---|---|---|
-| features/sfdc/account.sfdc.feature | `@sfdc` | SFDC | CSR | Search and view customer account |
-| features/sfdc/case.sfdc.feature | `@sfdc @smoke` | SFDC | CSR | View case queue / open cases list |
-| features/sfdc/user-list.sfdc.feature | `@sfdc` | SFDC | Admin | Browse and manage SFDC user list |
-| features/request-fastners/request-fasteners.feature | `@smoke @access @positive` / `@access @negative` / `@customer @regression` | SFDC | Multiple roles | Request Fasteners visibility by role from BA Requests menu |
-| features/web/home.web.feature | `@web @smoke` | Web | Customer | Load and verify Web home page |
-| features/web/Login.web.feature | `@web @smoke` + `@positive` / `@negative` | Web | Customer | Login with valid and invalid credentials |
-| features/web/account.web.feature | `@web` | Web | Customer | View and verify account settings |
-| features/sap/invoice.sap.feature | `@sap @smoke` | SAP | Finance user | Open invoice page and verify pending invoices |
-| features/sap/payment.sap.feature | `@sap` | SAP | Finance user | Open payment page and post payment |
-| features/iadaptive/home.iadaptive.feature | `@iadaptive @smoke` | IAdaptive | Portal user | Login and verify IAdaptive home page |
-| features/api/Toll-Rate-API.feature | `@api @toll-rate` | API | — | Toll rate calculations and zone validation |
-| features/e2e/payment.integration.feature | `@integration @smoke` | Cross-system | System | Cross-app payment flow (Web → SAP) |
+| functionalities/request-fastners/features/request-fasteners.feature | `@smoke @access @positive` / `@access @negative` / `@customer @regression` | SFDC | Multiple roles | Request Fasteners visibility by role from BA Requests menu |
+| functionalities/web-login-validation/features/login.web.feature | `@web @smoke` + `@positive` / `@negative` | Web | Customer | Login with valid and invalid credentials |
+| functionalities/toll-calculator-apis/features/toll-rate-api.feature | `@api @toll-rate` | API | — | Toll rate calculations and zone validation |
 
 ## Empty Placeholder Folders
 
-These folders are reserved but contain no feature files yet:
+These folders are present for growth but currently have no active feature files in this repository snapshot:
 
-- `features/appian/`
-- `features/fiori/`
-- `features/billings/`
-- `features/promotions/`
+- `functionalities/promotions/`
 
 ## Tag Reference
 

@@ -9,8 +9,8 @@ Tests **five systems from one project**: SFDC, Web, Appian, SAP Fiori, and APIs.
 
 - **BDD / Gherkin** — write tests in plain English `.feature` files
 - **Page Object Model (POM)** — business actions live in page classes, not in steps
-- **Layered architecture** — `core` (engine) · `pages` (UI pages) · `step-definitions` (BDD steps) · `data` (test data)
-- **One registry to rule them all** — add a system by editing `core/configs/app-registry.config.ts`
+- **Layered architecture** — `shared/core` (engine) · `shared/apps` (UI pages) · `functionalities/*/step-definitions` (BDD steps) · `functionalities/*/data` (test data)
+- **One registry to rule them all** — add a system by editing `shared/core/configs/app-registry.config.ts`
 - **Generic login** — one step logs into any system (portal or standalone)
 - **Reusable API client** — generic HTTP with 429 retry + report attachments; any API plugs in
 - **Pre-built action library** — `BasePage` ships 50+ ready-to-use methods
@@ -22,11 +22,36 @@ Tests **five systems from one project**: SFDC, Web, Appian, SAP Fiori, and APIs.
 ## Folder Structure
 
 ```
-features/                          # Gherkin specs, one subfolder per system
-  sfdc/ web/ appian/ fiori/ sap/ api/ iadaptive/ e2e/
-  billings/ promotions/ request-fastners/
+functionalities/                   # Domain modules: features + steps + data
+  common/
+    step-definitions/
+  request-fastners/
+    features/
+    step-definitions/
+    data/
+  toll-calculator-apis/
+    features/
+    step-definitions/
+    data/
+  web-login-validation/
+    features/
+    step-definitions/
+    data/
+  promotions/
 
-core/                              # Framework engine (app-agnostic, rarely changes)
+shared/
+  apis/
+    context.api.ts
+  apps/                            # App-specific page objects
+    appian/pages/
+    iadaptive/pages/
+    sap/pages/
+    sfdc/pages/
+    web/
+      pages/
+      locators/
+      *.web.page.ts
+  core/                            # Framework engine (app-agnostic, rarely changes)
   configs/
     app-registry.config.ts         # ⭐ SINGLE SOURCE OF TRUTH: all apps + APIs + lookup functions
   consts/
@@ -59,20 +84,6 @@ core/                              # Framework engine (app-agnostic, rarely chan
     sfdc.page.ts / web.page.ts     # App-specific page base classes
     appian.page.ts / sap.page.ts / fiori.page.ts
 
-pages/                             # Page object classes, one subfolder per system
-  base.page.ts                     # Re-exported from core/shared
-  sfdc/  web/  appian/  sap/  iadaptive/
-
-step-definitions/                  # BDD step implementations, one subfolder per system
-  api/
-    common.api.steps.ts            # Generic API steps (any service)
-    context.api.ts                 # Shared per-scenario API state
-    toll-rate.api.steps.ts         # Toll-specific request + assertion steps
-  sfdc/  web/  appian/  sap/  iadaptive/  e2e/
-
-data/                              # Test data (CSV files, rate charts, reference tables)
-  api/  sfdc/
-
 docs/                              # Documentation
 support/                           # Legacy support files (not active)
 scripts/                           # Report generation + Xray upload scripts
@@ -85,9 +96,9 @@ tsconfig.json                      # TypeScript compiler settings
 ```
 
 > **Per-system layout convention**
-> - `pages/<system>/` — page objects (one class per screen), locators co-located as `private get` `Locator` getters.
-> - `step-definitions/<system>/` — step files per feature area. Thin wrappers that call page methods.
-> - `data/` — module-specific test data / reference tables.
+> - `shared/apps/<system>/` — page objects (one class per screen), locators co-located as `private get` `Locator` getters.
+> - `functionalities/<module>/step-definitions/` — step files per domain. Thin wrappers that call page methods.
+> - `functionalities/<module>/data/` — module-specific test data / reference tables.
 
 ---
 
@@ -206,10 +217,10 @@ npm run test:qa:tag -- "(?=.*@access)(?=.*@positive)"
 
 ### Run a specific feature file
 
-Generated spec files live in `.features-gen/` and mirror the `features/` folder structure.
+Generated spec files live in `.features-gen/` and mirror the `functionalities/**/features/` folder structure.
 
 ```powershell
-npm run test:qa:file -- ".features-gen/features/sfdc/account.sfdc.feature.spec.js"
+npm run test:qa:file -- ".features-gen/functionalities/request-fastners/features/request-fasteners.feature.spec.js"
 ```
 
 ---
@@ -241,20 +252,20 @@ Behind the scenes this:
 
 ## Adding a New Test Case
 
-1. Create a `.feature` file in `features/<system>/` (e.g. `features/sfdc/my-story.sfdc.feature`).
+1. Create a `.feature` file in `functionalities/<module>/features/` (e.g. `functionalities/web-login-validation/features/my-story.web.feature`).
 2. Write your scenarios in Gherkin.
 3. Run `npm run bdd:gen` — it will print snippets for any steps that don't exist yet.
-4. Implement missing steps in `step-definitions/<system>/`.
-5. If new page actions are needed, add them to the page class in `pages/<system>/`.
+4. Implement missing steps in `functionalities/<module>/step-definitions/` or `functionalities/common/step-definitions/` when reusable.
+5. If new page actions are needed, add them to the page class in `shared/apps/<system>/`.
 
 ---
 
 ## Adding a New Page (POM)
 
 ```ts
-// pages/my-system/my-screen.my-system.page.ts
+// shared/apps/my-system/pages/my-screen.my-system.page.ts
 import { Locator } from '@playwright/test';
-import { BasePage } from '../base.page';
+import { BasePage } from '../../../core/shared/base.page';
 
 export class MyScreenPage extends BasePage {
   private get submitButton(): Locator {
@@ -267,16 +278,16 @@ export class MyScreenPage extends BasePage {
 }
 ```
 
-Then register the page in `core/fixtures/page-provider.fixture.ts`.
+Then register the page in `shared/core/fixtures/page-provider.fixture.ts`.
 
 ---
 
 ## Adding a New System to the Registry
 
-Edit `core/consts/app-registry.const.ts` to add the app entry, then `core/configs/app-registry.config.ts` exposes it automatically.
+Edit `shared/core/consts/app-registry.const.ts` to add the app entry, then `shared/core/configs/app-registry.config.ts` exposes it automatically.
 
 ```ts
-// core/consts/app-registry.const.ts
+// shared/core/consts/app-registry.const.ts
 { key: 'MyApp', label: 'My Application', launch: 'iadaptive', tile: 'My App Tile', tileEnvVar: 'MYAPP_LINK_TEXT' }
 ```
 

@@ -4,18 +4,43 @@ This is a **Playwright + playwright-bdd (Gherkin)** test automation framework th
 **five systems** from one project: SFDC, Web, Appian, SAP Fiori, and APIs.
 
 > **Golden rule:** reuse existing steps before writing new ones. Read the step files under
-> `step-definitions/` first. Only add a step when no existing step expresses the intent.
+> `functionalities/*/step-definitions/` first (including `functionalities/common/step-definitions/`). Only add a step when no existing step expresses the intent.
 
 ---
 
 ## Architecture
 
 ```
-features/                          # Gherkin specs — one subfolder per system
-  sfdc/ web/ appian/ fiori/ sap/ api/ iadaptive/ e2e/
-  billings/ promotions/ request-fastners/
+functionalities/                   # Feature-domain modules (features + steps + data)
+  common/
+    step-definitions/              # Shared reusable BDD steps (login/common api/common sfdc)
+  request-fastners/
+    features/
+    step-definitions/
+    data/
+  toll-calculator-apis/
+    features/
+    step-definitions/
+    data/
+  web-login-validation/
+    features/
+    step-definitions/
+    data/
+  promotions/                      # Reserved domain folder
 
-core/                              # Framework engine — app-agnostic, never imports app code
+shared/
+  apis/
+    context.api.ts                 # Per-scenario API state
+  apps/                            # App-scoped page objects
+    appian/pages/
+    iadaptive/pages/
+    sap/pages/
+    sfdc/pages/
+    web/
+      pages/
+      locators/
+      *.web.page.ts
+  core/                            # Framework engine — app-agnostic, never imports app code
   configs/
     app-registry.config.ts         # ⭐ SINGLE SOURCE OF TRUTH — lookup functions for all apps + APIs
   consts/
@@ -43,20 +68,6 @@ core/                              # Framework engine — app-agnostic, never im
     iadaptive.page.ts              # IAdaptive portal login + tile launcher
     sfdc.page.ts / web.page.ts / appian.page.ts / sap.page.ts / fiori.page.ts
 
-pages/                             # Page object classes — one subfolder per system
-  base.page.ts                     # Re-export of core/shared/base.page.ts
-  sfdc/  web/  appian/  sap/  iadaptive/
-
-step-definitions/                  # BDD step implementations — one subfolder per system
-  api/
-    common.api.steps.ts            # Generic API steps usable by any service
-    context.api.ts                 # Per-scenario API state (last response + meta)
-    toll-rate.api.steps.ts         # Toll-specific request + assertion steps
-  sfdc/  web/  appian/  sap/  iadaptive/  e2e/
-
-data/                              # Test data — CSV files, rate charts, reference tables
-  api/  sfdc/
-
 support/                           # Legacy files — NOT active, do not import from here
 scripts/                           # Report generation + Xray upload utilities
 ```
@@ -65,18 +76,18 @@ scripts/                           # Report generation + Xray upload utilities
 
 ## Layer rules
 
-- `core/` knows nothing about any specific app or API — never add app logic here.
-- `core/configs/` + `core/consts/` are the **only** place to register a new app or API.
-- `pages/<system>/` owns locators and page actions for that system only.
-- `step-definitions/<system>/` owns BDD steps for that system only. Steps must be thin — call page methods, not implement logic.
-- `core/shared/` holds base classes shared across all systems.
+- `shared/core/` knows nothing about any specific app or API — never add app logic here.
+- `shared/core/configs/` + `shared/core/consts/` are the **only** place to register a new app or API.
+- `shared/apps/<system>/` owns locators and page actions for that system only.
+- `functionalities/<module>/step-definitions/` owns domain-specific BDD steps; `functionalities/common/step-definitions/` owns shared steps. Steps must be thin — call page methods, not implement logic.
+- `shared/core/shared/` holds base classes shared across all systems.
 
 ---
 
 ## The app-registry is the control panel
 
-[core/configs/app-registry.config.ts](../core/configs/app-registry.config.ts) exposes lookup functions.
-[core/consts/app-registry.const.ts](../core/consts/app-registry.const.ts) holds the data arrays.
+[shared/core/configs/app-registry.config.ts](../shared/core/configs/app-registry.config.ts) exposes lookup functions.
+[shared/core/consts/app-registry.const.ts](../shared/core/consts/app-registry.const.ts) holds the data arrays.
 
 Each entry decides:
 - `launch: 'iadaptive'` — login to the portal and click a tile to open the app.
@@ -90,18 +101,18 @@ Each entry decides:
 ## How to add things
 
 ### Add a UI system launched via iAdaptive (Appian / Fiori / SAP pattern)
-1. Add an entry to `UI_APPS` in [core/consts/app-registry.const.ts](../core/consts/app-registry.const.ts) with `launch: 'iadaptive'` and the portal `tile` text.
-2. Create `pages/<system>/<system>.page.ts` extending `BasePage`.
-3. Register it in [core/fixtures/page-provider.fixture.ts](../core/fixtures/page-provider.fixture.ts).
-4. Write steps in `step-definitions/<system>/`.
+1. Add an entry to `UI_APPS` in [shared/core/consts/app-registry.const.ts](../shared/core/consts/app-registry.const.ts) with `launch: 'iadaptive'` and the portal `tile` text.
+2. Create a page object under `shared/apps/<system>/` (or `shared/apps/<system>/pages/`) extending `BasePage`.
+3. Register it in [shared/core/fixtures/page-provider.fixture.ts](../shared/core/fixtures/page-provider.fixture.ts).
+4. Write steps under the relevant domain in `functionalities/<module>/step-definitions/`.
 5. The generic login step already works: `Given I am logged in to "<System>" as "<role>"`.
 
 ### Add a standalone UI system (Web pattern)
 Same as above, but set `launch: 'standalone'` and `urlEnvVar` in the registry.
 
 ### Add a new company API
-1. Add an entry to `API_SERVICES` in [core/consts/app-registry.const.ts](../core/consts/app-registry.const.ts) with `baseUrlEnvVar`.
-2. Write service-specific steps in `step-definitions/api/`.
+1. Add an entry to `API_SERVICES` in [shared/core/consts/app-registry.const.ts](../shared/core/consts/app-registry.const.ts) with `baseUrlEnvVar`.
+2. Write service-specific steps in `functionalities/<api-module>/step-definitions/`.
 3. The generic API steps work immediately for the new service.
 
 ---
@@ -116,9 +127,9 @@ Same as above, but set `launch: 'standalone'` and `urlEnvVar` in the registry.
 - **Step phrasing**: generic, parameterized, quoted values — e.g. `Given I am logged in to "SFDC" as "CSR"`.
 - **Credentials**: env vars only — `{APP}_{ROLE}_USERNAME` / `{APP}_{ROLE}_PASSWORD`. Role names are uppercased, spaces → `_`.
 - **No secrets in code or features.** Use `.env.qa` / `.env.uat`.
-- **Test data** lives in `data/` — never hardcoded in steps or feature files.
+- **Test data** lives in `functionalities/<module>/data/` — never hardcoded in steps or feature files.
 - **Tags**: every scenario needs at least one of `@smoke @regression @positive @negative @access`. API scenarios must also have `@api`.
-- **Do NOT import from `support/`** — those are legacy `@cucumber/cucumber` files, superseded by `core/fixtures/`.
+- **Do NOT import from `support/`** — those are legacy `@cucumber/cucumber` files, superseded by `shared/core/fixtures/`.
 
 ---
 

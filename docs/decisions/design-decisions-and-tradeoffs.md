@@ -4,15 +4,15 @@
 
 | # | Decision | Rationale |
 |---|----------|-----------|
-| 1 | `core/` is app-agnostic | Framework engine is stable and reusable across all systems; app logic never bleeds in |
+| 1 | `shared/core/` is app-agnostic | Framework engine is stable and reusable across all systems; app logic never bleeds in |
 | 2 | App-registry as single source of truth | One file controls login mode, URLs, and credentials for every app; no scattered config |
 | 3 | Generic login step (`I am logged into {string} as {string}`) | New apps require zero step code — just a registry entry |
 | 4 | System-scoped folders for features, steps, pages | Stable CI targeting; clear ownership; no cross-system coupling |
 | 5 | `BasePage` pre-built action library | 50+ actions available without re-implementation; DRY across all page objects |
 | 6 | `playwright-bdd` over bare `@playwright/test` | Gherkin BDD without the `@cucumber/cucumber` dependency; built on top of Playwright runner |
 | 7 | Incognito Chrome via factory | Clean auth state per test; uses system Chrome (no bundled browser download required in CI) |
-| 8 | Models / types / consts in separate `core/` subfolders | LIFT principle — easy to locate any interface, type alias, or constant |
-| 9 | `support/` left empty | Legacy `@cucumber/cucumber` files fully superseded by `core/fixtures/`; kept as placeholder |
+| 8 | Models / types / consts in separate `shared/core/` subfolders | LIFT principle — easy to locate any interface, type alias, or constant |
+| 9 | `support/` left empty | Legacy `@cucumber/cucumber` files fully superseded by `shared/core/fixtures/`; kept as placeholder |
 
 ## Trade-offs
 

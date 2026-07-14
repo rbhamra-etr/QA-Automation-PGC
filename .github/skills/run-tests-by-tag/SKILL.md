@@ -20,25 +20,25 @@ Use this skill to run tests by app tag (feature-folder based), smoke, or all.
 ## Preferred Commands
 
 Use npm scripts from `package.json`:
-- `npm run test:all`
+- `npm test`
 - `npm run test:smoke`
 - `npm run test:web`
 - `npm run test:sap`
 - `npm run test:sfdc`
 - `npm run test:appian`
-- `npm run test:integration`
+- `npm run test:e2e`
 
 ## Fallback Commands
 
-- `npx cucumber-js --tags "@web"`
-- `npx cucumber-js --tags "@sap"`
-- `npx cucumber-js --tags "@sfdc"`
-- `npx cucumber-js --tags "@appian"`
-- `npx cucumber-js --tags "@integration"`
-- `npx cucumber-js --tags "@smoke"`
-- `npx cucumber-js`
+- `npm run test:qa:tag -- @web`
+- `npm run test:qa:tag -- @sap`
+- `npm run test:qa:tag -- @sfdc`
+- `npm run test:qa:tag -- @appian`
+- `npm run test:qa:tag -- @integration`
+- `npm run test:qa:tag -- @smoke`
+- `npm run test:qa`
 
 ## Notes
 
-- Tags are expected to align with folder names directly under `features/`.
-- Run `npm run validate:feature-tags` if tag alignment is in doubt.
+- Tags are expected to align with the module feature files under `functionalities/**/features/`.
+- Run `node scripts/validate-feature-tags.js` if tag alignment is in doubt.

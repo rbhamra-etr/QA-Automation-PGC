@@ -65,23 +65,10 @@ export const EXECUTION = {
 } as const;
 
 const testDir = defineBddConfig({
-  paths: ['features/**/*.feature'],
+  paths: ['functionalities/**/features/**/*.feature'],
   require: [
-    'core/fixtures/test.fixture.ts',
-    'step-definitions/api/common.api.steps.ts',
-    'step-definitions/api/context.api.ts',
-    'step-definitions/api/toll-rate.api.steps.ts',
-    'step-definitions/appian/home.appian.steps.ts',
-    'step-definitions/iadaptive/home.iadaptive.steps.ts',
-    'step-definitions/sap/invoice.sap.steps.ts',
-    'step-definitions/sfdc/case.sfdc.steps.ts',
-    'step-definitions/sfdc/common.sfdc.steps.ts',
-    'step-definitions/sfdc/login.sfdc.steps.ts',
-    'step-definitions/sfdc/request-fasteners.steps.ts',
-    'step-definitions/sfdc/user-list.sfdc.steps.ts',
-    'step-definitions/web/home.web.steps.ts',
-    'step-definitions/web/login.web.steps.ts',
-    'step-definitions/web/web-login-common.steps.ts',
+    'shared/core/fixtures/test.fixture.ts',
+    'functionalities/**/step-definitions/**/*.ts',
   ],
 });
 

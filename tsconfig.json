@@ -14,10 +14,10 @@
   },
   "include": [
     "playwright.config.ts",
-    "core/**/*.ts",
+    "shared/core/**/*.ts",
     "data/**/*.ts",
     "pages/**/*.ts",
     "step-definitions/**/*.ts",
-    "core/configs/env.config.ts"
-  ]
+    "shared/core/configs/env.config.ts"
+, "functionalities/common/step-definitions/common.api.steps.ts", "shared/apis/context.api.ts", "functionalities/toll-calculator-apis/step-definitions/toll-rate.api.steps.ts", "functionalities/common/step-definitions/common.sfdc.steps.ts", "functionalities/common/step-definitions/web-login-common.steps.ts", "functionalities/web-login-validation/step-definitions/login.web.steps.ts", "functionalities/request-fastners/request-fasteners.steps.ts", "functionalities/common/login.sfdc.steps.ts"  ]
 }

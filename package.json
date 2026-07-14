@@ -35,8 +35,8 @@
     "test:qa:file": "npm run bdd:gen && cross-env ENV=qa playwright test",
     "test:uat:file": "npm run bdd:gen && cross-env ENV=uat playwright test",
     "test:uat:web:tag": "npm run bdd:gen && cross-env ENV=uat playwright test Features/web --grep",
-    "xray:upload:cucumber": "node scripts/upload-xray-cucumber.mjs",
-    "xray:import:features": "node scripts/import-xray-features.mjs"
+    "xray:upload:cucumber": "node -r ts-node/register scripts/xray/upload-xray-cucumber.ts",
+    "xray:import:features": "node -r ts-node/register scripts/xray/import-xray-features.ts"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +49,7 @@
     "dotenv": "^17.4.2",
     "multiple-cucumber-html-reporter": "^4.0.0",
     "playwright-bdd": "^8.5.0",
+    "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
 }

@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const projectRoot = process.cwd();
-const featuresRoot = path.join(projectRoot, 'features');
+const functionalitiesRoot = path.join(projectRoot, 'functionalities');
 
-function getAllFeatureFiles(dir) {
+function getAllFeatureFiles(dir: string): string[] {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
-  const files = [];
+  const files: string[] = [];
 
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
@@ -24,13 +24,13 @@ function getAllFeatureFiles(dir) {
   return files;
 }
 
-function getTagLines(content) {
+function getTagLines(content: string): string[] {
   const lines = content
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
 
-  const tagLines = [];
+  const tagLines: string[] = [];
   for (const line of lines) {
     if (line.startsWith('@')) {
       tagLines.push(line);
@@ -45,18 +45,28 @@ function getTagLines(content) {
   return tagLines;
 }
 
-function validate() {
-  if (!fs.existsSync(featuresRoot)) {
-    console.error('features folder not found.');
+function validate(): void {
+  if (!fs.existsSync(functionalitiesRoot)) {
+    console.error('functionalities folder not found.');
     process.exit(1);
   }
 
-  const featureFiles = getAllFeatureFiles(featuresRoot);
-  const violations = [];
+  const featureFiles: string[] = [];
+  for (const entry of fs.readdirSync(functionalitiesRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+
+    const featureDir = path.join(functionalitiesRoot, entry.name, 'features');
+    if (fs.existsSync(featureDir)) {
+      featureFiles.push(...getAllFeatureFiles(featureDir));
+    }
+  }
+  const violations: Array<{ relativePath: string; expectedTag: string; allTags: string[] }> = [];
 
   for (const filePath of featureFiles) {
     const relativePath = path.relative(projectRoot, filePath).replace(/\\/g, '/');
-    const appFolder = path.basename(path.dirname(filePath));
+    const appFolder = path.basename(path.dirname(path.dirname(filePath)));
     const expectedTag = `@${appFolder}`;
 
     const content = fs.readFileSync(filePath, 'utf8');
@@ -72,7 +82,7 @@ function validate() {
 
   if (violations.length > 0) {
     console.error('Feature tag validation failed.');
-    console.error('Each feature must include a tag that matches its folder under features.');
+    console.error('Each feature must include a tag that matches its module folder under functionalities.');
     console.error('');
 
     for (const violation of violations) {

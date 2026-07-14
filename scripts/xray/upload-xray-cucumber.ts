@@ -9,11 +9,11 @@ if (!fs.existsSync(reportPath)) {
 }
 
 const raw = fs.readFileSync(reportPath, 'utf-8');
-const parsed = JSON.parse(raw);
+const parsed = JSON.parse(raw) as unknown;
 
 const isCloud = (process.env.XRAY_MODE || 'cloud').toLowerCase() === 'cloud';
 
-async function uploadToXrayCloud() {
+async function uploadToXrayCloud(): Promise<void> {
   const clientId = process.env.XRAY_CLIENT_ID;
   const clientSecret = process.env.XRAY_CLIENT_SECRET;
 
@@ -35,11 +35,19 @@ async function uploadToXrayCloud() {
   const token = (await authResponse.text()).replace(/^"|"$/g, '');
 
   const query = new URLSearchParams();
-  if (process.env.XRAY_PROJECT_KEY) query.set('projectKey', process.env.XRAY_PROJECT_KEY);
-  if (process.env.XRAY_TEST_EXECUTION_KEY) query.set('testExecutionKey', process.env.XRAY_TEST_EXECUTION_KEY);
-  if (process.env.XRAY_TEST_PLAN_KEY) query.set('testPlanKey', process.env.XRAY_TEST_PLAN_KEY);
+  if (process.env.XRAY_PROJECT_KEY) {
+    query.set('projectKey', process.env.XRAY_PROJECT_KEY);
+  }
+  if (process.env.XRAY_TEST_EXECUTION_KEY) {
+    query.set('testExecutionKey', process.env.XRAY_TEST_EXECUTION_KEY);
+  }
+  if (process.env.XRAY_TEST_PLAN_KEY) {
+    query.set('testPlanKey', process.env.XRAY_TEST_PLAN_KEY);
+  }
 
-  const url = `https://xray.cloud.getxray.app/api/v2/import/execution/cucumber${query.toString() ? `?${query.toString()}` : ''}`;
+  const url = `https://xray.cloud.getxray.app/api/v2/import/execution/cucumber${
+    query.toString() ? `?${query.toString()}` : ''
+  }`;
 
   const importResponse = await fetch(url, {
     method: 'POST',
@@ -60,7 +68,7 @@ async function uploadToXrayCloud() {
   console.log(body);
 }
 
-async function uploadToXrayServer() {
+async function uploadToXrayServer(): Promise<void> {
   const baseUrl = process.env.XRAY_BASE_URL;
   const authToken = process.env.XRAY_AUTH_TOKEN;
 
@@ -68,14 +76,17 @@ async function uploadToXrayServer() {
     throw new Error('XRAY_BASE_URL and XRAY_AUTH_TOKEN are required for XRAY_MODE=server.');
   }
 
-  const importResponse = await fetch(`${baseUrl.replace(/\/$/, '')}/rest/raven/1.0/import/execution/cucumber`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-      'Content-Type': 'application/json',
+  const importResponse = await fetch(
+    `${baseUrl.replace(/\/$/, '')}/rest/raven/1.0/import/execution/cucumber`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(parsed),
     },
-    body: JSON.stringify(parsed),
-  });
+  );
 
   if (!importResponse.ok) {
     const body = await importResponse.text();
@@ -94,7 +105,7 @@ async function uploadToXrayServer() {
   }
 
   await uploadToXrayServer();
-})().catch((error) => {
+})().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 });

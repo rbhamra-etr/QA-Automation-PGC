@@ -1,26 +1,32 @@
 /**
- * import-xray-features.mjs
+ * import-xray-features.ts
  *
  * Imports one or more Gherkin .feature files into Xray Cloud as Test issues.
  * Reads credentials from the active env file (ENV=qa by default).
  *
  * Usage:
- *   node scripts/import-xray-features.mjs [featureFileOrFolder] [--folder "Repo/Path"]
+ *   node -r ts-node/register scripts/xray/import-xray-features.ts [featureFileOrFolder] [--folder "Repo/Path"]
  *
  * Examples:
- *   node scripts/import-xray-features.mjs features/sfdc/user-list.sfdc.feature
- *   node scripts/import-xray-features.mjs features/sfdc/user-list.sfdc.feature --folder "AI Test Case Generation/User"
- *   node scripts/import-xray-features.mjs features/web --folder "Web"
- *   ENV=uat node scripts/import-xray-features.mjs features/sfdc/user-list.sfdc.feature
+ *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature
+ *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature --folder "AI Test Case Generation/User"
+ *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/web-login-validation/features --folder "Web"
+ *   ENV=uat node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(__dirname, '..');
+type ImportResult = {
+  file: string;
+  status: 'OK' | 'FAILED';
+  tests?: string[];
+  errors?: unknown[];
+  error?: string;
+};
+
+const root = process.cwd();
 
 // ---------------------------------------------------------------------------
 // Load env file
@@ -38,20 +44,20 @@ console.log(`Loaded: ${envFile}`);
 // Parse CLI args
 // ---------------------------------------------------------------------------
 const args = process.argv.slice(2);
-let featurePath = null;
-let testRepositoryPath = null;
+let featurePath: string | null = null;
+let testRepositoryPath: string | null = null;
 
-for (let i = 0; i < args.length; i++) {
+for (let i = 0; i < args.length; i += 1) {
   if (args[i] === '--folder' && args[i + 1]) {
     testRepositoryPath = args[i + 1];
-    i++;
+    i += 1;
   } else if (!featurePath) {
     featurePath = args[i];
   }
 }
 
 if (!featurePath) {
-  console.error('Usage: node scripts/import-xray-features.mjs <featureFileOrFolder> [--folder "Repo/Folder"]');
+  console.error('Usage: node -r ts-node/register scripts/xray/import-xray-features.ts <featureFileOrFolder> [--folder "Repo/Folder"]');
   process.exit(1);
 }
 
@@ -64,7 +70,7 @@ if (!fs.existsSync(resolvedPath)) {
   process.exit(1);
 }
 
-const featureFiles = [];
+const featureFiles: string[] = [];
 const stat = fs.statSync(resolvedPath);
 if (stat.isDirectory()) {
   for (const file of fs.readdirSync(resolvedPath)) {
@@ -116,20 +122,21 @@ console.log('Xray auth OK.');
 // ---------------------------------------------------------------------------
 // Build testInfo — include any required custom fields from env
 // ---------------------------------------------------------------------------
-const testInfoFields = {};
+const testInfoFields: Record<string, string[]> = {};
 
 // Support injecting custom fields via env vars: XRAY_CUSTOM_FIELD_<ID>=value1,value2
 for (const [key, val] of Object.entries(process.env)) {
   const match = key.match(/^XRAY_CUSTOM_FIELD_(\d+)$/);
-  if (match) {
+  if (match && typeof val === 'string') {
     const fieldId = `customfield_${match[1]}`;
-    testInfoFields[fieldId] = val.split(',').map(v => v.trim());
+    testInfoFields[fieldId] = val.split(',').map((v) => v.trim());
   }
 }
 
-const testInfo = Object.keys(testInfoFields).length > 0
-  ? JSON.stringify({ fields: testInfoFields })
-  : null;
+const testInfo =
+  Object.keys(testInfoFields).length > 0
+    ? JSON.stringify({ fields: testInfoFields })
+    : null;
 
 if (testInfo) {
   console.log(`testInfo custom fields: ${Object.keys(testInfoFields).join(', ')}`);
@@ -138,7 +145,7 @@ if (testInfo) {
 // ---------------------------------------------------------------------------
 // Import each feature file
 // ---------------------------------------------------------------------------
-const results = [];
+const results: ImportResult[] = [];
 
 for (const featureFile of featureFiles) {
   const fileName = path.relative(root, featureFile);
@@ -147,7 +154,9 @@ for (const featureFile of featureFiles) {
   const params = new URLSearchParams({ projectKey });
   if (testRepositoryPath) {
     // Xray Cloud requires an absolute path with a leading slash
-    const absPath = testRepositoryPath.startsWith('/') ? testRepositoryPath : `/${testRepositoryPath}`;
+    const absPath = testRepositoryPath.startsWith('/')
+      ? testRepositoryPath
+      : `/${testRepositoryPath}`;
     params.set('testRepositoryPath', absPath);
   }
 
@@ -159,7 +168,11 @@ for (const featureFile of featureFiles) {
   form.append('file', blob, path.basename(featureFile));
 
   if (testInfo) {
-    form.append('testInfo', new Blob([testInfo], { type: 'application/json' }), 'testInfo.json');
+    form.append(
+      'testInfo',
+      new Blob([testInfo], { type: 'application/json' }),
+      'testInfo.json',
+    );
   }
 
   const importResponse = await fetch(url, {
@@ -176,15 +189,16 @@ for (const featureFile of featureFiles) {
     continue;
   }
 
-  let parsed;
+  let parsed: any;
   try {
     parsed = JSON.parse(responseText);
   } catch {
     parsed = responseText;
   }
 
-  const updatedKeys = parsed?.updatedOrCreatedTests?.map(t => t.key) ?? [];
-  const precondKeys = parsed?.updatedOrCreatedPreconditions?.map(p => p.key) ?? [];
+  const updatedKeys = parsed?.updatedOrCreatedTests?.map((t: { key: string }) => t.key) ?? [];
+  const precondKeys =
+    parsed?.updatedOrCreatedPreconditions?.map((p: { key: string }) => p.key) ?? [];
   const errors = parsed?.errors ?? [];
 
   if (updatedKeys.length > 0) {
@@ -207,10 +221,13 @@ for (const featureFile of featureFiles) {
 // Summary
 // ---------------------------------------------------------------------------
 console.log('\n========== SUMMARY ==========');
-for (const r of results) {
-  const label = r.status === 'OK' ? `OK  [${r.tests?.join(', ') || 'no keys'}]` : `FAIL ${r.error}`;
-  console.log(`  ${r.file}: ${label}`);
+for (const result of results) {
+  const label =
+    result.status === 'OK'
+      ? `OK  [${result.tests?.join(', ') || 'no keys'}]`
+      : `FAIL ${result.error}`;
+  console.log(`  ${result.file}: ${label}`);
 }
 
-const failed = results.filter(r => r.status !== 'OK');
+const failed = results.filter((result) => result.status !== 'OK');
 process.exit(failed.length > 0 ? 1 : 0);

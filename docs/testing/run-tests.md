@@ -67,3 +67,35 @@ npm run test:qa:tag -- "(?=.*@access)(?=.*@positive)"
 ```bash
 npm run xray:upload:cucumber
 ```
+
+## Troubleshooting
+
+### 1) Feature file argument does not run the expected test
+
+Use npm argument pass-through with a space after `--`.
+
+```powershell
+# Correct
+npm run test:qa:file -- .features-gen/functionalities/request-fastners/features/request-fasteners.feature.spec.js
+
+# Incorrect
+npm run test:qa:file --request-fasteners.feature
+```
+
+### 2) Missing credential errors for role-based login
+
+If you see errors like missing `SFDC_<ROLE>_USERNAME` / `SFDC_<ROLE>_PASSWORD`, add both keys to `.env.qa` or `.env.uat`.
+
+### 3) Specs not found under `.features-gen`
+
+Run generation first:
+
+```powershell
+npm run bdd:gen
+```
+
+### 4) Run one feature faster with workers
+
+```powershell
+npm run test:qa:file -- .features-gen/functionalities/request-fastners/features/request-fasteners.feature.spec.js --project=chrome --workers=4
+```

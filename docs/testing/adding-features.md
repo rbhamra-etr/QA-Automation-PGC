@@ -1,5 +1,16 @@
 # Adding Features
 
+## Before You Write Steps
+
+1. Confirm the business behavior under test:
+   - preconditions
+   - user action(s)
+   - expected observable outcome
+2. Decide scenario type:
+   - `Scenario` for one path
+   - `Scenario Outline` when same flow repeats with different data
+3. Keep one behavior per scenario.
+
 ## Step-by-step
 
 1. Pick the correct module folder for the system under test:
@@ -18,6 +29,7 @@
    - One action per step — never combine two actions
    - Page name always last: `on the <PageName> page`
    - Example: `User clicks the Submit button on the Make a Payment page`
+   - Use `Background` only for shared preconditions that truly apply to all scenarios in the feature
 
 5. Reuse existing step definitions — check `functionalities/common/step-definitions/` and the target module `functionalities/<module>/step-definitions/` first.
 
@@ -30,6 +42,10 @@
    - Locators are `private get` `Locator` properties on the page class
    - No raw selectors in step files
 
-8. Register new page objects in `shared/core/fixtures/page-provider.fixture.ts`.
+8. Test data:
+   - Store reusable test data in `functionalities/<module>/data/`
+   - Avoid hardcoding large datasets directly in step definitions
 
-9. Run tests: `npm run test:<system>` or `npm run test:smoke`.
+9. Register new page objects in `shared/core/fixtures/page-provider.fixture.ts`.
+
+10. Run tests: `npm run test:<system>` or `npm run test:smoke`.

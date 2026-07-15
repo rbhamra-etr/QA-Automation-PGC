@@ -3,7 +3,7 @@ import path from 'node:path';
 
 export default class RichCucumberReporter {
   onEnd(): void {
-    const scriptPath = path.resolve(process.cwd(), 'scripts/reporting/generate-rich-cucumber-report.ts');
+    const scriptPath = path.resolve(process.cwd(), 'scripts/reporting/generate-cucumber-rich-html.report.ts');
 
     try {
       execFileSync(process.execPath, ['-r', 'ts-node/register', scriptPath], {

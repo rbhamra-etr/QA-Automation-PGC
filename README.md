@@ -225,12 +225,26 @@ npm run test:qa:file -- ".features-gen/functionalities/request-fastners/features
 
 ---
 
-### Upload Cucumber JSON to Xray
+### Publish Results to Xray
 
 After test execution generates `reports/cucumber/cucumber-report.json`:
 
 ```powershell
+# Canonical command (recommended)
+npm run xray:import-cucumber-execution
+```
+
+Run the full pipeline (create execution, sync test runs, optional evidence):
+
+```powershell
+npm run xray:run-pipeline -- --test-plan QA-123 --environment qa
+```
+
+Legacy aliases are still supported for backward compatibility:
+
+```powershell
 npm run xray:upload:cucumber
+npm run xray:run-all -- --test-plan QA-123 --environment qa
 ```
 
 ---

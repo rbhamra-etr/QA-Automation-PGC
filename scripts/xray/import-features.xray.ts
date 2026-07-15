@@ -1,17 +1,17 @@
 /**
- * import-xray-features.ts
+ * import-features.xray.ts
  *
  * Imports one or more Gherkin .feature files into Xray Cloud as Test issues.
  * Reads credentials from the active env file (ENV=qa by default).
  *
  * Usage:
- *   node -r ts-node/register scripts/xray/import-xray-features.ts [featureFileOrFolder] [--folder "Repo/Path"]
+ *   node -r ts-node/register scripts/xray/import-features.xray.ts [featureFileOrFolder] [--folder "Repo/Path"]
  *
  * Examples:
- *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature
- *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature --folder "AI Test Case Generation/User"
- *   node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/web-login-validation/features --folder "Web"
- *   ENV=uat node -r ts-node/register scripts/xray/import-xray-features.ts functionalities/request-fastners/features/request-fasteners.feature
+ *   node -r ts-node/register scripts/xray/import-features.xray.ts functionalities/request-fastners/features/request-fasteners.feature
+ *   node -r ts-node/register scripts/xray/import-features.xray.ts functionalities/request-fastners/features/request-fasteners.feature --folder "AI Test Case Generation/User"
+ *   node -r ts-node/register scripts/xray/import-features.xray.ts functionalities/web-login-validation/features --folder "Web"
+ *   ENV=uat node -r ts-node/register scripts/xray/import-features.xray.ts functionalities/request-fastners/features/request-fasteners.feature
  */
 
 import fs from 'node:fs';
@@ -57,7 +57,7 @@ for (let i = 0; i < args.length; i += 1) {
 }
 
 if (!featurePath) {
-  console.error('Usage: node -r ts-node/register scripts/xray/import-xray-features.ts <featureFileOrFolder> [--folder "Repo/Folder"]');
+  console.error('Usage: node -r ts-node/register scripts/xray/import-features.xray.ts <featureFileOrFolder> [--folder "Repo/Folder"]');
   process.exit(1);
 }
 

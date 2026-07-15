@@ -89,7 +89,7 @@ export default defineConfig({
   reporter: [
     ['html', { outputFolder: 'reports/playwright', open: 'never' }],
     cucumberReporter('json', { outputFile: 'reports/cucumber/cucumber-report.json' }),
-    ['./scripts/reporting/rich-cucumber-reporter.ts'],
+    ['./scripts/reporting/cucumber-rich-hook.report.ts'],
     //cucumberReporter('html', { outputFile: 'reports/cucumber/cucumber-report.html' }),
   ],
 

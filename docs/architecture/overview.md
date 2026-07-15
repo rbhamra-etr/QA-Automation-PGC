@@ -99,3 +99,65 @@ shared/
 | `browser.const.ts` | Constant |
 | `app-registry.model.ts` | Interface |
 | `browser.type.ts` | Type alias |
+
+---
+
+## Scripts & Tooling
+
+```
+scripts/
+  xray/
+    common.xray.ts                  ← Shared HTTP client, types, argument parser, context I/O
+    create-test-execution.xray.ts   ← Create or reuse a Xray Test Execution
+    sync-test-runs.xray.ts          ← Update test run statuses + comments from Cucumber results
+    upload-test-evidence.xray.ts    ← Attach evidence files to matching test runs
+    import-features.xray.ts         ← Import .feature files into Xray as Test issues
+    import-cucumber-execution.xray.ts ← Import Cucumber JSON report directly into Xray
+    run-pipeline.xray.ts            ← Orchestrates the full Xray pipeline (create → sync → evidence)
+  reporting/
+    generate-rich-cucumber-report.ts ← Generates the rich HTML Cucumber report
+    rich-cucumber-reporter.ts        ← Playwright reporter plugin wired via playwright.config.ts
+  validation/
+    find-step-definition.validation.ts  ← Locate a step definition by step text
+    map-feature-steps.validation.ts     ← Map all feature steps to their definitions
+```
+
+### Environment Loading
+
+All scripts consume a **single env source of truth**: `shared/core/configs/env.config.ts`.
+
+- Loads `.env.<ENV>` (e.g. `.env.qa`, `.env.uat`) based on the `ENV` environment variable.
+- Falls back to `.env` if no env-specific file exists.
+- Exposes `requireEnvVar(name)` and `requireEnvVars(names, scope)` helpers that throw early with clear messages when variables are missing.
+- Credential convention: `{APP}_{ROLE}_USERNAME` / `{APP}_{ROLE}_PASSWORD`.
+
+### Xray Pipeline Flow
+
+```
+npm run xray:run-pipeline -- --test-plan <KEY> --environment <ENV>
+```
+
+1. **Preflight** — validates that all required Jira + Xray env vars are present (`JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `XRAY_CLIENT_ID`, `XRAY_CLIENT_SECRET`).
+2. **Create/reuse execution** (`create-test-execution.xray.ts`) — creates a new Xray Test Execution linked to the Test Plan, or reuses one passed via `--execution`.
+3. **Sync test runs** (`sync-test-runs.xray.ts`) — reads `reports/cucumber/cucumber-report.json`, matches Jira keys in scenario names/tags, and updates Xray test run statuses.
+4. **Upload evidence** (`upload-test-evidence.xray.ts`) — optional, enabled with `--upload-evidence`; attaches screenshots and logs from `reports/errors/` to matching test runs.
+
+### Hooks
+
+Playwright-bdd hooks run within the BDD fixture lifecycle:
+
+- **`Before` / `After`** — declared in step definition files using `Before()` / `After()` from `@cucumber/cucumber`. Scoped per tag, per feature, or globally.
+- **`BeforeAll` / `AfterAll`** — for suite-level setup/teardown (e.g. browser launch, test data seeding).
+- **Reporter hook** — `shared/core/scripts/reporting/rich-cucumber-reporter.ts` is registered as a Playwright reporter in `playwright.config.ts` and runs automatically at the end of every test run to generate the rich HTML report.
+- **Teardown** — global teardown logic (if needed) belongs in `playwright.config.ts → globalTeardown`, not in a standalone script file.
+
+### Known Limitations & Planned Improvements
+
+| Area | Current State | Planned Improvement |
+|------|--------------|---------------------|
+| Xray script architecture | File-level function exports in `common.xray.ts` | Introduce `XrayClient` and `JiraClient` service classes |
+| Env loading in Xray scripts | Each script manages its own dotenv loading | Single call to `env.config.ts`; all scripts reuse shared helpers |
+| Pipeline error reporting | Generic `fetch failed` messages | Host-level diagnostics, error codes, TLS CA hint |
+| Xray GraphQL query limits | `tests(limit: 500)` exceeds API max | Fix to `tests(limit: 100)` |
+| CI guard scripts | Not present in PGC | Port `check-forbidden-files.ts` and style guards from `QA-Playwright_Automation` |
+| TypeScript strictness | `tsconfig.json` uses default strictness | Incremental strict profiles per domain (core, scripts, apps) |

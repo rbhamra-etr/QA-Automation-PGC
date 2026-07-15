@@ -46,7 +46,9 @@
     "xray:create-execution": "node -r ts-node/register scripts/xray/create-test-execution.xray.ts",
     "xray:import-results": "node -r ts-node/register scripts/xray/sync-test-runs.xray.ts",
     "xray:upload-evidence": "node -r ts-node/register scripts/xray/upload-test-evidence.xray.ts",
-    "xray:run-all": "node -r ts-node/register scripts/xray/run-pipeline.xray.ts"
+    "xray:run-all": "node -r ts-node/register scripts/xray/run-pipeline.xray.ts",
+    "validate:find-step-definition": "node -r ts-node/register scripts/validation/find-step-definition.validation.ts",
+    "validate:map-feature-steps": "node -r ts-node/register scripts/validation/map-feature-steps.validation.ts"
   },
   "keywords": [],
   "author": "",

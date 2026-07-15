@@ -65,8 +65,41 @@ npm run test:qa:tag -- "(?=.*@access)(?=.*@positive)"
 ## Xray Upload
 
 ```bash
-npm run xray:upload:cucumber
+npm run xray:import-cucumber-execution
 ```
+
+Full Xray pipeline:
+
+```bash
+npm run xray:run-pipeline -- --test-plan QA-123 --environment qa
+```
+
+## Validation Commands
+
+```bash
+npm run validate:find-step-definition -- "Given the Toll Rate API is available"
+npm run validate:map-feature-steps -- functionalities/toll-calculator-apis/features/toll-rate-api.feature
+```
+
+## Local Hooks
+
+Use a local pre-commit hook for validation checks.
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+Recommended pre-commit command pattern:
+
+```bash
+npm run validate:map-feature-steps -- <changed-feature-file>
+```
+
+## Validation TODO List
+
+- Run map-feature validation only on changed `.feature` files.
+- Add pull-request validation for unresolved steps.
+- Publish unresolved-step triage examples in docs.
 
 ## Troubleshooting
 

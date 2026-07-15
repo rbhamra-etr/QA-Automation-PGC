@@ -38,3 +38,28 @@ npm run test:qa:file -- .features-gen/functionalities/request-fastners/features/
 - `npm run bdd:gen` completes without generation errors
 - `npm run test:smoke` starts Playwright successfully
 - Reports are generated under `reports/playwright/` and `reports/cucumber/`
+
+## Step Validation Commands
+
+Run these before committing feature changes:
+
+```powershell
+npm run validate:find-step-definition -- "Given the Toll Rate API is available"
+npm run validate:map-feature-steps -- functionalities/toll-calculator-apis/features/toll-rate-api.feature
+```
+
+## Local Pre-Commit Hook Setup
+
+1. Create `.githooks/pre-commit` in the repo.
+2. Add your validation command(s) to that file.
+3. Configure git to use local hooks:
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+## TODO List
+
+- Hook validation for changed `.feature` files only.
+- Add unresolved-step validation to pull request checks.
+- Add examples for common unresolved-step fixes.

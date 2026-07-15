@@ -249,6 +249,54 @@ npm run xray:run-all -- --test-plan QA-123 --environment qa
 
 ---
 
+### Step Validation Utilities
+
+Validate step-definition coverage before committing feature changes:
+
+```powershell
+npm run validate:find-step-definition -- "Given the Toll Rate API is available"
+npm run validate:map-feature-steps -- functionalities/toll-calculator-apis/features/toll-rate-api.feature
+```
+
+---
+
+### Local Git Hooks (Before Commit)
+
+Use a local pre-commit hook so validation runs automatically.
+
+1. Create a `.githooks/pre-commit` file in the repo.
+2. Add this content:
+
+```bash
+#!/usr/bin/env bash
+set -e
+
+npm run validate:map-feature-steps -- functionalities/toll-calculator-apis/features/toll-rate-api.feature
+```
+
+3. Point git to local hooks:
+
+```powershell
+git config core.hooksPath .githooks
+```
+
+4. Make the hook executable (Git Bash):
+
+```bash
+chmod +x .githooks/pre-commit
+```
+
+---
+
+### Validation TODO List
+
+- Add a pre-commit hook that validates only changed `.feature` files.
+- Add a CI job that runs `validate:map-feature-steps` for changed features in pull requests.
+- Add a CI job that fails if any feature step is unresolved.
+- Document troubleshooting examples for unresolved-step output.
+
+---
+
 ## How Login Works
 
 Feature files never mention IAdaptive. One step handles everything:

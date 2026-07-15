@@ -1,3 +1,4 @@
+@request-fastners
 Feature: Request Fasteners from Billing Account Requests menu
 
   @smoke @access @positive

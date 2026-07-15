@@ -1,4 +1,4 @@
-@web @smoke
+@web @smoke @web-login-validation
 Feature: 407ETR Web Login
   Validate login functionality for the 407ETR web application.
 

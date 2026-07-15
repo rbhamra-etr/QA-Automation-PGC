@@ -6,6 +6,7 @@
   "scripts": {
     "bdd:gen": "bddgen",
     "test": "npm run bdd:gen && playwright test",
+    "test:all": "npm run test",
     "test:headed": "npm run bdd:gen && cross-env HEADLESS=false playwright test",
     "test:headless": "npm run bdd:gen && cross-env HEADLESS=true playwright test",
     "test:ui": "npm run bdd:gen && playwright test --ui",
@@ -22,6 +23,7 @@
     "test:negative": "npm run bdd:gen && playwright test --grep @negative",
     "test:access": "npm run bdd:gen && playwright test --grep @access",
     "test:api": "npm run bdd:gen && playwright test --project api",
+    "test:integration": "npm run test:api",
     "test:browser": "npm run bdd:gen && playwright test --project chrome",
     "test:sfdc": "npm run bdd:gen && playwright test Features/sfdc",
     "test:web": "npm run bdd:gen && playwright test Features/web",
@@ -48,7 +50,8 @@
     "xray:upload-evidence": "node -r ts-node/register scripts/xray/upload-test-evidence.xray.ts",
     "xray:run-all": "node -r ts-node/register scripts/xray/run-pipeline.xray.ts",
     "validate:find-step-definition": "node -r ts-node/register scripts/validation/find-step-definition.validation.ts",
-    "validate:map-feature-steps": "node -r ts-node/register scripts/validation/map-feature-steps.validation.ts"
+    "validate:map-feature-steps": "node -r ts-node/register scripts/validation/map-feature-steps.validation.ts",
+    "validate:feature-tags": "node -r ts-node/register scripts/validation/feature-tags.validation.ts"
   },
   "keywords": [],
   "author": "",

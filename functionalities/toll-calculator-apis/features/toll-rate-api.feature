@@ -1,4 +1,4 @@
-@api @toll-rate
+@api @toll-rate @toll-calculator-apis
 Feature: Toll Rate API Validation
 
   Validates the ETR Toll Rate Calculator API returns correct zone breakdowns,

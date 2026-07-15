@@ -1,5 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import { BasePage } from './base.page';
+import { TIMEOUTS } from '../consts/timeout.const';
 
 /**
  * WebPage — the standalone company web application.
@@ -145,13 +146,13 @@ export class WebPage extends BasePage {
 
       if (overrideSelector) {
         const target = this.page.locator(overrideSelector).first();
-        await target.waitFor({ state: 'visible', timeout: 30000 });
-        await expect(target).toBeEnabled({ timeout: 30000 });
+        await target.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+        await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
         await target.click();
       } else {
         const target = this.myAccountButton.first();
-        await target.waitFor({ state: 'visible', timeout: 30000 });
-        await expect(target).toBeEnabled({ timeout: 30000 });
+        await target.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+        await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
         await target.click();
       }
 
@@ -167,13 +168,13 @@ export class WebPage extends BasePage {
 
         if (loginLinkOverride) {
           const target = this.page.locator(loginLinkOverride).first();
-          await target.waitFor({ state: 'visible', timeout: 30000 });
-          await expect(target).toBeEnabled({ timeout: 30000 });
+          await target.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+          await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
           await target.click();
         } else {
           const target = this.accountLoginLink.first();
-          await target.waitFor({ state: 'visible', timeout: 30000 });
-          await expect(target).toBeEnabled({ timeout: 30000 });
+          await target.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+          await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
           await target.click();
         }
 
@@ -181,10 +182,10 @@ export class WebPage extends BasePage {
       }
 
       // Many implementations route to /myaccount first, then render the login inputs.
-      await this.page.waitForURL(/myaccount|auth|login/i, { timeout: 30000 }).catch(() => {});
+      await this.page.waitForURL(/myaccount|auth|login/i, { timeout: TIMEOUTS.THIRTY_SECONDS }).catch(() => {});
     }
 
-    await this.userIdInput.first().waitFor({ state: 'visible', timeout: 60000 });
+    await this.userIdInput.first().waitFor({ state: 'visible', timeout: TIMEOUTS.ONE_MINUTE });
   }
 
   private async isPasswordStepVisible(): Promise<boolean> {
@@ -200,14 +201,14 @@ export class WebPage extends BasePage {
 
     if (overrideSelector) {
       const target = this.page.locator(overrideSelector).first();
-      await target.waitFor({ state: 'visible', timeout: 30000 });
-      await expect(target).toBeEnabled({ timeout: 30000 });
+      await target.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+      await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
       await target.click();
     } else {
       const continueVisible = await this.continueButton.first().isVisible().catch(() => false);
       if (continueVisible) {
         const target = this.continueButton.first();
-        await expect(target).toBeEnabled({ timeout: 30000 });
+        await expect(target).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
         await target.click();
       } else {
         const nextVisible = await this.usernameNextButton.first().isVisible().catch(() => false);
@@ -221,7 +222,7 @@ export class WebPage extends BasePage {
 
     await this.page.waitForTimeout(this.passwordStepDelayMs);
     await expect
-      .poll(async () => this.passwordInput.first().isVisible().catch(() => false), { timeout: 30000 })
+      .poll(async () => this.passwordInput.first().isVisible().catch(() => false), { timeout: TIMEOUTS.THIRTY_SECONDS })
       .toBeTruthy();
   }
 
@@ -230,7 +231,7 @@ export class WebPage extends BasePage {
     await this.goToPasswordStep();
 
     const passwordField = this.passwordInput.first();
-    await expect(passwordField).toBeEnabled({ timeout: 30000 });
+    await expect(passwordField).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
     await passwordField.click();
     await passwordField.fill('');
     await passwordField.pressSequentially(password, { delay: this.passwordTypeDelayMs });
@@ -242,14 +243,14 @@ export class WebPage extends BasePage {
 
   async clickLoginButton(): Promise<void> {
     const passwordField = this.passwordInput.first();
-    await passwordField.waitFor({ state: 'visible', timeout: 30000 });
-    await expect(passwordField).toBeEnabled({ timeout: 30000 });
+    await passwordField.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+    await expect(passwordField).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
 
     await this.page.waitForTimeout(this.beforeLoginClickDelayMs);
 
     const loginBtn = this.loginButton.first();
-    await loginBtn.waitFor({ state: 'visible', timeout: 30000 });
-    await expect(loginBtn).toBeEnabled({ timeout: 30000 });
+    await loginBtn.waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
+    await expect(loginBtn).toBeEnabled({ timeout: TIMEOUTS.THIRTY_SECONDS });
     await loginBtn.click();
     await this.page.waitForLoadState('domcontentloaded');
   }
@@ -258,12 +259,12 @@ export class WebPage extends BasePage {
     const expectedUrlPart = process.env.WEB_HOME_URL_CONTAINS?.trim() || '/myaccount/';
 
     await expect
-      .poll(() => this.page.url(), { timeout: 45000 })
+      .poll(() => this.page.url(), { timeout: TIMEOUTS.FORTY_FIVE_SECONDS })
       .toContain(expectedUrlPart);
 
     // Ensure we are not stuck on auth/login callback routes.
     await expect
-      .poll(() => this.page.url(), { timeout: 45000 })
+      .poll(() => this.page.url(), { timeout: TIMEOUTS.FORTY_FIVE_SECONDS })
       .not.toMatch(/\/auth\/login|\/u\/login|\/signin|\/login\?/i);
 
     await this.page.waitForLoadState('domcontentloaded');
@@ -272,7 +273,7 @@ export class WebPage extends BasePage {
   async verifyDashboardVisible(): Promise<void> {
     const selectorOverride = process.env.WEB_HOME_MARKER_SELECTOR?.trim();
     if (selectorOverride) {
-      await this.page.locator(selectorOverride).first().waitFor({ state: 'visible', timeout: 30000 });
+      await this.page.locator(selectorOverride).first().waitFor({ state: 'visible', timeout: TIMEOUTS.THIRTY_SECONDS });
       return;
     }
 
@@ -283,7 +284,7 @@ export class WebPage extends BasePage {
           const byText = await this.dashboardTextMarker.first().isVisible().catch(() => false);
           return byStructure || byText;
         },
-        { timeout: 30000 },
+        { timeout: TIMEOUTS.THIRTY_SECONDS },
       )
       .toBeTruthy();
   }
@@ -329,6 +330,6 @@ export class WebPage extends BasePage {
     await this.openLoginPage(baseUrl);
     await this.enterCredentials(username, password);
     await this.clickLoginButton();
-    await this.page.waitForLoadState('networkidle', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('networkidle', { timeout: TIMEOUTS.THIRTY_SECONDS }).catch(() => {});
   }
 }

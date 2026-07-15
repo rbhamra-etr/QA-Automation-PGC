@@ -1,6 +1,7 @@
 import { expect, Page, Locator, FrameLocator } from '@playwright/test';
 import { getIAdaptiveUrl } from '../configs/env.config';
 import { BasePage } from './base.page';
+import { iadaptiveCommonLocators } from '../../apps/iadaptive/locators/common.locators';
 
 /**
  * IAdaptivePage — the SHARED login gateway, not an app under test.
@@ -40,6 +41,35 @@ export class IAdaptivePage extends BasePage {
     return this.portalFrame.locator(`//a[text()="${linkText}"]`);
   }
 
+  /**
+   * Wait for iAdaptive portal shell readiness after login redirects.
+   * Checks either portal iframe availability or app launcher links visibility.
+   */
+  protected async waitForShellLoaded(timeoutMs = 60000): Promise<void> {
+    await this.waitForCondition(
+      async () => {
+        const iframeReady = await this.page
+          .locator(iadaptiveCommonLocators.portalIframes)
+          .first()
+          .isVisible()
+          .catch(() => false);
+
+        const linksVisible = await this.page
+          .locator(iadaptiveCommonLocators.userPortalIframe)
+          .count()
+          .then((count) => count > 0)
+          .catch(() => false);
+
+        return iframeReady || linksVisible;
+      },
+      {
+        timeoutMs,
+        intervalMs: 500,
+        message: 'iAdaptive shell did not reach ready state',
+      },
+    );
+  }
+
   async open(): Promise<void> {
     const url = getIAdaptiveUrl();
     if (!url) throw new Error('IADAPTIVE_ACCESS_URL is not set. Add it to .env.qa or .env.uat.');
@@ -75,6 +105,7 @@ export class IAdaptivePage extends BasePage {
     // Wait for portal to load
     await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForLoadState('networkidle', { timeout: 120000 }).catch(() => {});
+    await this.waitForShellLoaded();
   }
 
   /**

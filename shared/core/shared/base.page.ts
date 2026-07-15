@@ -224,6 +224,92 @@ export class BasePage {
     return this.page.waitForResponse(urlPattern, { timeout: timeoutMs });
   }
 
+  /**
+   * Poll an arbitrary async/sync condition until it becomes true.
+   * Use this for app-specific readiness checks that Playwright cannot infer.
+   */
+  protected async waitForCondition(
+    condition: () => Promise<boolean> | boolean,
+    options: { timeoutMs?: number; intervalMs?: number; message?: string } = {},
+  ): Promise<void> {
+    const { timeoutMs = 30000, intervalMs = 500, message = 'Condition not met' } = options;
+    const deadline = Date.now() + timeoutMs;
+
+    while (Date.now() < deadline) {
+      if (await condition()) {
+        return;
+      }
+      await this.sleep(intervalMs);
+    }
+
+    throw new Error(`${message} (waited ${timeoutMs}ms)`);
+  }
+
+  /**
+   * Retry a transiently failing operation using exponential backoff.
+   * Keeps flaky UI races from failing the test on first attempt.
+   */
+  protected async retryWithBackoff<T>(
+    operation: () => Promise<T>,
+    options: {
+      maxAttempts?: number;
+      initialDelayMs?: number;
+      maxDelayMs?: number;
+      backoffFactor?: number;
+      operationName?: string;
+    } = {},
+  ): Promise<T> {
+    const {
+      maxAttempts = 3,
+      initialDelayMs = 1000,
+      maxDelayMs = 10000,
+      backoffFactor = 2,
+      operationName = 'Operation',
+    } = options;
+
+    let lastError: unknown;
+    let delayMs = initialDelayMs;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        return await operation();
+      } catch (error: unknown) {
+        lastError = error;
+        if (attempt === maxAttempts) {
+          break;
+        }
+
+        const message = error instanceof Error ? error.message : String(error);
+        console.warn(
+          `${operationName} failed on attempt ${attempt}/${maxAttempts}: ${message}. Retrying in ${delayMs}ms...`,
+        );
+
+        await this.sleep(delayMs);
+        delayMs = Math.min(Math.round(delayMs * backoffFactor), maxDelayMs);
+      }
+    }
+
+    throw new Error(
+      `${operationName} failed after ${maxAttempts} attempts: ${
+        lastError instanceof Error ? lastError.message : String(lastError)
+      }`,
+    );
+  }
+
+  /** Wait for an element's text to change from a known previous value. */
+  protected async waitForTextChange(selector: string, fromText: string, timeoutMs = 15000): Promise<void> {
+    await this.waitForCondition(
+      async () => {
+        const current = await this.locate(selector).textContent();
+        return (current ?? '').trim() !== fromText.trim();
+      },
+      {
+        timeoutMs,
+        message: `Text in selector "${selector}" did not change from "${fromText}"`,
+      },
+    );
+  }
+
   /** Pause execution for a fixed number of milliseconds (use sparingly). */
   protected async sleep(ms: number): Promise<void> {
     await this.page.waitForTimeout(ms);

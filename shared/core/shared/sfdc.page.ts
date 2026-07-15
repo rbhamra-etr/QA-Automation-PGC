@@ -1,7 +1,37 @@
 import { expect, Locator } from '@playwright/test';
 import { BasePage } from './base.page';
+import { sfdcCommonLocators } from '../../apps/sfdc/locators/common.locators';
 
 export class SfdcPage extends BasePage {
+  /**
+   * Wait for Salesforce shell to be interactable.
+   * Uses broad selectors so all SFDC page objects can reuse it safely.
+   */
+  protected async waitForShellLoaded(timeoutMs = 30000): Promise<void> {
+    await this.waitForCondition(
+      async () => {
+        const headerVisible = await this.page
+          .locator(sfdcCommonLocators.shellHeader)
+          .first()
+          .isVisible()
+          .catch(() => false);
+
+        const spinnerVisible = await this.page
+          .locator(sfdcCommonLocators.shellBusyIndicators)
+          .first()
+          .isVisible()
+          .catch(() => false);
+
+        return headerVisible && !spinnerVisible;
+      },
+      {
+        timeoutMs,
+        intervalMs: 500,
+        message: 'SFDC shell did not reach ready state',
+      },
+    );
+  }
+
   // ── Locators (co-located) ─────────────────────────────────────────────────
   // Getters re-read `this.page` on every access, so they stay correct even after
   // the SFDC login step swaps the page to the popup via switchToPage().
@@ -49,10 +79,17 @@ export class SfdcPage extends BasePage {
   }
 
   async searchGlobally(searchText: string): Promise<void> {
+    await this.waitForShellLoaded();
+
     // Close any active tabs before searching
     await this.closeAllTabs();
     // Click the search button to activate the input
-    await this.searchButton.click({ timeout: 20000 });
+    await this.retryWithBackoff(
+      async () => {
+        await this.searchButton.click({ timeout: 20000 });
+      },
+      { operationName: 'Click SFDC global search button' },
+    );
     // Fill the now-active search input and submit
     const input = this.globalSearchInput;
     await input.waitFor({ state: 'visible', timeout: 10000 });
@@ -63,7 +100,12 @@ export class SfdcPage extends BasePage {
   async openRecordFromResults(recordText: string): Promise<void> {
     const link = this.searchResultLink(recordText).first();
     await link.waitFor({ state: 'visible', timeout: 20000 });
-    await link.click();
+    await this.retryWithBackoff(
+      async () => {
+        await link.click();
+      },
+      { operationName: `Open SFDC record from results (${recordText})` },
+    );
   }
 
   async verifyRecordOpened(expectedText: string): Promise<void> {
@@ -72,8 +114,15 @@ export class SfdcPage extends BasePage {
   }
 
   async openRequestsMenu(): Promise<void> {
+    await this.waitForShellLoaded();
+
     // Click the Requests tab
-    await this.requestsTab.click({ timeout: 20000 });
+    await this.retryWithBackoff(
+      async () => {
+        await this.requestsTab.click({ timeout: 20000 });
+      },
+      { operationName: 'Open SFDC Requests tab' },
+    );
     // Wait for the process name dropdown input to appear
     const input = this.processNameInput;
     await input.waitFor({ state: 'visible', timeout: 15000 });
